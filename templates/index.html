@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><title>Cover Page Generator</title></head>
+<head><title>Assignment Cover Page Generator</title></head>
 <body>
   <h2>Assignment Cover Page Generator</h2>
-  <form action="/generate_cover" method="post">
+  <form action="/generate" method="post">
     <label>Assignment No: <input name="assignment_no" required></label><br>
     <label>Course Code: <input name="course_code" required></label><br>
     <label>Course Title: <input name="course_title" required></label><br>
@@ -11,7 +11,6 @@
     <label>Date of Submission: <input name="submission_date" required></label><br>
     <label>Student Name: <input name="student_name" required></label><br>
     <label>ID: <input name="student_id" required></label><br>
-    <label>Submitted To (Teacher): <input name="submitted_to" required></label><br>
     <button type="submit">Generate PDF</button>
   </form>
 </body>
