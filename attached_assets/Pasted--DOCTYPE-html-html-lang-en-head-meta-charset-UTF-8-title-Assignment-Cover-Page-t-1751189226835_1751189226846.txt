@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment Cover Page</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      margin: 0;
+      padding: 50px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      border: 2px solid #000;
+      padding: 40px;
+    }
+    /* Header inline style */
+    .header-inline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 40px;
+    }
+    .header-inline .university-name {
+      font-size: 31px; /* 23 pt */
+      font-weight: normal;
+    }
+    .header-inline .department-name {
+      font-size: 21px; /* 16 pt */
+      font-style: italic;
+    }
+    .header-inline img {
+      width: 70px;
+      height: auto;
+    }
+    hr.dotted-line {
+      margin: 30px 0;
+      border-top: 2px dotted #000;
+    }
+    .title {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 31px; /* 23 pt */
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .assignment-info {
+      margin-top: 30px;
+      font-size: 21px;
+      max-width: 500px;
+      display: grid;
+      grid-template-columns: max-content max-content 1fr;
+      column-gap: 10px;
+      row-gap: 12px;
+    }
+    .assignment-info .label {
+      text-align: left;
+      white-space: nowrap;
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+    }
+    .assignment-info .colon {
+      text-align: center;
+    }
+    .assignment-info .value {
+      font-weight: bold;
+      text-align: left;
+    }
+    .section-title {
+      font-size: 21px;
+      margin-top: 40px;
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .submitted-section {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+    }
+    .info-table {
+      width: 380px;
+      border-collapse: collapse;
+      font-size: 20px;
+    }
+    .info-table th,
+    .info-table td {
+      border: 1px solid #000;
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: normal;
+    }
+    .remarks-box {
+      border: 2px solid black;
+      width: 200px;
+      height: 120px;
+      margin-left: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 20px;
+      font-weight: normal;
+    }
+    .remarks-text {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+      border-bottom: 1px solid black;
+      padding-bottom: 5px;
+    }
+    .submitted-to-text {
+      font-size: 20px;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-inline">
+      <div class="university-name">PREMIER UNIVERSITY</div>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/Premier_University_logo.svg/1200px-Premier_University_logo.svg.png"
+        alt="Premier University Logo"
+      />
+      <div class="department-name">Department of Computer Science & Engineering</div>
+    </div>
+
+    <hr class="dotted-line" />
+
+    <div class="title">Assignment</div>
+
+    <div class="assignment-info">
+      <div class="label">Assignment No.</div>
+      <div class="colon">:</div>
+      <div class="value">01</div>
+
+      <div class="label">Course Code</div>
+      <div class="colon">:</div>
+      <div class="value">MGT 251</div>
+
+      <div class="label">Course Title</div>
+      <div class="colon">:</div>
+      <div class="value">Organizational Behavior</div>
+
+      <div class="label">Assignment Name</div>
+      <div class="colon">:</div>
+      <div class="value">Regular Assignment</div>
+
+      <div class="label">Date of Submission</div>
+      <div class="colon">:</div>
+      <div class="value">29-06-2025</div>
+    </div>
+
+    <div class="section-title">Submitted by</div>
+
+    <div class="submitted-section">
+      <div>
+        <table class="info-table">
+          <tr><th>Name</th><td>Mohammad Hafizur Rahman Sakib</td></tr>
+          <tr><th>ID</th><td>0222210005101118</td></tr>
+          <tr><th>Program</th><td>B.Sc. in CSE</td></tr>
+          <tr><th>Batch</th><td>41</td></tr>
+          <tr><th>Section</th><td>C</td></tr>
+          <tr><th>Session</th><td>Fall 2025</td></tr>
+        </table>
+      </div>
+      <div class="remarks-box">
+        <div class="remarks-text">Remarks</div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top: 60px;">Submitted to</div>
+
+    <div class="submitted-to-text">
+      <strong>Submitted to:</strong><br />
+      Tashin Hossain<br />
+      Lecturer, CSE Department<br />
+      Premier University<br />
+      Chittagong
+    </div>
+  </div>
+</body>
+</html>
