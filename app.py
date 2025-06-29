@@ -1,58 +1,72 @@
+                    from flask import Flask, render_template, request, send_file
+                    from reportlab.pdfgen import canvas
+                    from reportlab.lib.pagesizes import letter
+                    import os
+                    import tempfile
+                    from PIL import Image
 
-from flask import Flask, render_template, request, send_file
-import os
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.utils import ImageReader
-from io import BytesIO
-import tempfile
+                    app = Flask(__name__)
 
-app = Flask(__name__)
+                    @app.route('/')
+                    def index():
+                        print(f"Current working directory: {os.getcwd()}")
+                        print("Rendering index.html")
+                        return render_template("index.html")
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+                    @app.route('/generate_cover', methods=['POST'])
+                    def generate_cover():
+                        print("Reached /generate_cover route")
+                        print(f"Form data: {request.form}")
+                        try:
+                            data = request.form
+                            assignment_title = data.get('assignment_name', 'Sample Assignment')
+                            student_name = data.get('student_name', 'Unknown Student')
+                            course_name = data.get('course_title', 'Unknown Course')
+                            professor_name = data.get('submitted_to', 'Unknown Professor')
+                            print(f"Generating PDF with title: {assignment_title}")
 
-@app.route('/generate', methods=['POST'])
-def generate_cover():
-    # Get form data
-    student_name = request.form.get('student_name', '')
-    course_name = request.form.get('course_name', '')
-    assignment_title = request.form.get('assignment_title', '')
-    date = request.form.get('date', '')
-    professor_name = request.form.get('professor_name', '')
-    
-    # Create PDF in memory
-    buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
-    
-    # Add logo if exists
-    logo_path = os.path.join('static', 'images', 'puclogo.png')
-    if os.path.exists(logo_path):
-        p.drawImage(logo_path, 50, height - 150, width=100, height=100)
-    
-    # Add text content
-    p.setFont("Helvetica-Bold", 24)
-    p.drawCentredText(width/2, height - 200, assignment_title)
-    
-    p.setFont("Helvetica", 16)
-    p.drawCentredText(width/2, height - 250, f"Student: {student_name}")
-    p.drawCentredText(width/2, height - 280, f"Course: {course_name}")
-    p.drawCentredText(width/2, height - 310, f"Professor: {professor_name}")
-    p.drawCentredText(width/2, height - 340, f"Date: {date}")
-    
-    p.showPage()
-    p.save()
-    
-    buffer.seek(0)
-    
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name=f"{assignment_title}_cover.pdf",
-        mimetype='application/pdf'
-    )
+                            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as pdf_file:
+                                print(f"Creating PDF at: {pdf_file.name}")
+                                p = canvas.Canvas(pdf_file.name, pagesize=letter)
+                                width, height = letter
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+                                logo_path = os.path.join(os.path.dirname(__file__), 'static', 'images', 'puclogo.png')
+                                print(f"Checking logo path: {logo_path}")
+                                if os.path.exists(logo_path):
+                                    try:
+                                        img = Image.open(logo_path)
+                                        print(f"Image opened successfully: {img.format}, {img.size}")
+                                        p.drawImage(logo_path, 50, height - 150, width=100, height=100)
+                                    except Exception as e:
+                                        print(f"Error drawing image: {e}")
+                                        p.drawString(50, height - 150, "Logo not available")
+                                else:
+                                    print(f"File not found: {logo_path}")
+                                    p.drawString(50, height - 150, "Logo not found")
+
+                                p.setFont("Helvetica-Bold", 24)
+                                p.drawCentredString(width / 2, height - 200, assignment_title)
+                                p.setFont("Helvetica", 16)
+                                p.drawCentredString(width / 2, height - 250, f"Student: {student_name}")
+                                p.drawCentredString(width / 2, height - 280, f"Course: {course_name}")
+                                p.drawCentredString(width / 2, height - 310, f"Professor: {professor_name}")
+
+                                p.showPage()
+                                p.save()
+                                print("PDF generated successfully")
+                                return send_file(pdf_file.name, as_attachment=True, download_name="cover_page.pdf")
+
+                        except Exception as e:
+                            print(f"Error generating PDF: {e}")
+                            return "Error generating PDF. Check logs for details.", 500
+
+                    @app.route('/test_image')
+                    def test_image():
+                        logo_path = os.path.join(os.path.dirname(__file__), 'static', 'images', 'puclogo.png')
+                        print(f"Testing image path: {logo_path}")
+                        if os.path.exists(logo_path):
+                            return send_file(logo_path)
+                        return "Image not found", 404
+
+                    if __name__ == '__main__':
+                        app.run(host='0.0.0.0', port=8080, debug=True)
