@@ -20,10 +20,14 @@ def generate_cover():
     print(f"Form data: {request.form}")
     try:
         data = request.form
+        assignment_no = data.get('assignment_no', '1')
+        course_code = data.get('course_code', 'N/A')
         assignment_title = data.get('assignment_name', 'Sample Assignment')
         student_name = data.get('student_name', 'Unknown Student')
+        student_id = data.get('student_id', 'N/A')
         course_name = data.get('course_title', 'Unknown Course')
         professor_name = data.get('submitted_to', 'Unknown Professor')
+        submission_date = data.get('submission_date', 'N/A')
         print(f"Generating PDF with title: {assignment_title}")
 
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as pdf_file:
@@ -47,10 +51,15 @@ def generate_cover():
 
             p.setFont("Helvetica-Bold", 24)
             p.drawCentredString(width / 2, height - 200, assignment_title)
+            
             p.setFont("Helvetica", 16)
-            p.drawCentredString(width / 2, height - 250, f"Student: {student_name}")
-            p.drawCentredString(width / 2, height - 280, f"Course: {course_name}")
-            p.drawCentredString(width / 2, height - 310, f"Professor: {professor_name}")
+            p.drawCentredString(width / 2, height - 250, f"Assignment No: {assignment_no}")
+            p.drawCentredString(width / 2, height - 280, f"Course Code: {course_code}")
+            p.drawCentredString(width / 2, height - 310, f"Course: {course_name}")
+            p.drawCentredString(width / 2, height - 340, f"Student: {student_name}")
+            p.drawCentredString(width / 2, height - 370, f"ID: {student_id}")
+            p.drawCentredString(width / 2, height - 400, f"Submitted To: {professor_name}")
+            p.drawCentredString(width / 2, height - 430, f"Date: {submission_date}")
 
             p.showPage()
             p.save()
