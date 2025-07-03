@@ -31,10 +31,6 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       transition: all 0.3s ease;
     }
-    .light-mode {
-      background: linear-gradient(135deg, #f9eaea 0%, #d4d4d4 100%);
-      color: #3b0000;
-    }
     .container {
       max-width: 600px;
       padding: 0;
@@ -48,12 +44,6 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
-    .light-mode .form-control:disabled,
-    .light-mode .form-select:disabled,
-    .light-mode .choices__inner:disabled {
-      background-color: #f9f9f9 !important;
-      color: #3b0000 !important;
-    }
     .title {
       font-size: 2rem;
       font-weight: 900;
@@ -64,9 +54,6 @@
       margin-bottom: 1rem;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
-    .light-mode .title {
-      color: #3b0000;
-    }
     .card {
       background: #1c0000;
       border-radius: 10px;
@@ -75,11 +62,6 @@
       border: 1px solid #5a0000;
       overflow-y: auto;
       max-height: calc(100vh - 120px);
-    }
-    .light-mode .card {
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      border: 1px solid #e5e5e5;
     }
     .form-control, .form-select {
       background: #2a1a1a;
@@ -97,15 +79,6 @@
       background: #2a1a1a;
       color: #ffffff;
     }
-    .light-mode .form-control, .light-mode .form-select {
-      background: #f9f9f9;
-      color: #3b0000;
-      border-color: #b3b3b3;
-    }
-    .light-mode .form-control:focus, .light-mode .form-select:focus {
-      background: #f9f9f9;
-      color: #3b0000;
-    }
     .choices__inner {
       background: #2a1a1a !important;
       border: 1px solid #5a2e2e !important;
@@ -118,11 +91,6 @@
       align-items: center;
       box-sizing: border-box;
     }
-    .light-mode .choices__inner {
-      background: #f9f9f9 !important;
-      border: 1px solid #b3b3b3 !important;
-      color: #3b0000 !important;
-    }
     .choices__list--single {
       padding: 0;
     }
@@ -134,11 +102,6 @@
       font-size: 0.8rem;
       max-height: 200px;
       overflow-y: auto;
-    }
-    .light-mode .choices__list--dropdown {
-      background: #f9f9f9 !important;
-      border: 1px solid #b3b3b3 !important;
-      color: #3b0000 !important;
     }
     .choices__list--dropdown .choices__item--selectable.is-highlighted {
       background: #dc2626 !important;
@@ -181,37 +144,12 @@
       border-color: #dc2626;
       transform: translateY(-2px);
     }
-    .light-mode .btn-outline-secondary {
-      border-color: #b3b3b3;
-      color: #3b0000;
-    }
-    .light-mode .btn-outline-secondary:hover {
-      background: #e5e5e5;
-      border-color: #b91c1c;
-    }
-    .mode-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      border-radius: 50%;
-      padding: 6px;
-      background: #2a0000;
-      border: 1px solid #5a2e2e;
-    }
-    .light-mode .mode-toggle {
-      background: #ffffff;
-      border: 1px solid #b3b3b3;
-    }
     .form-label {
       font-weight: 600;
       font-size: 0.75rem;
       color: #f8d7da;
       margin-bottom: 4px;
       letter-spacing: 0.02em;
-    }
-    .light-mode .form-label {
-      color: #3b0000;
     }
     .dashboard-grid {
       display: grid;
@@ -236,22 +174,11 @@
       background: #3a2a2a;
       border-color: #dc2626;
     }
-    .light-mode .upload-container {
-      background: #f9f9f9;
-      border-color: #b3b3b3;
-    }
-    .light-mode .upload-container:hover {
-      background: #e5e5e5;
-      border-color: #b91c1c;
-    }
     .upload-container label {
       cursor: pointer;
       font-size: 0.8rem;
       font-weight: 600;
       color: #f8d7da;
-    }
-    .light-mode .upload-container label {
-      color: #3b0000;
     }
     .upload-container input[type="file"] {
       display: none;
@@ -261,9 +188,6 @@
       font-size: 0.7rem;
       color: #f8d7da;
       word-break: break-all;
-    }
-    .light-mode .upload-text {
-      color: #3b0000;
     }
     .submit-container {
       grid-column: 1 / -1;
@@ -278,30 +202,16 @@
       color: #f8d7da;
       border-radius: 10px;
     }
-    .light-mode .modal-content {
-      background: #ffffff;
-      border: 1px solid #e5e5e5;
-      color: #3b0000;
-    }
     .modal-header {
       border-bottom: 1px solid #5a2e2e;
     }
-    .light-mode .modal-header {
-      border-bottom: 1px solid #b3b3b3;
-    }
     .modal-footer {
       border-top: 1px solid #5a2e2e;
-    }
-    .light-mode .modal-footer {
-      border-top: 1px solid #b3b3b3;
     }
     .modal-title {
       font-weight: 600;
       font-size: 1rem;
       color: #f8d7da;
-    }
-    .light-mode .modal-title {
-      color: #3b0000;
     }
     .modal-body {
       font-size: 0.9rem;
@@ -311,14 +221,8 @@
       overflow-y: auto;
       padding: 1rem;
     }
-    .light-mode .modal-body {
-      color: #3b0000;
-    }
     .btn-close {
       filter: invert(1) brightness(1.5);
-    }
-    .light-mode .btn-close {
-      filter: none;
     }
     .output-type-group {
       grid-column: 1 / -1;
@@ -357,20 +261,6 @@
       border-color: #dc2626;
       color: #ffffff;
     }
-    .light-mode .output-type-btn {
-      background: #f9f9f9;
-      border: 1px solid #b3b3b3;
-      color: #3b0000;
-    }
-    .light-mode .output-type-btn:hover {
-      background: #e5e5e5;
-      border-color: #b91c1c;
-    }
-    .light-mode .output-type-btn.active {
-      background: linear-gradient(90deg, #dc2626, #f87171);
-      border-color: #dc2626;
-      color: #ffffff;
-    }
     .output-type-btn i {
       margin-right: 6px;
     }
@@ -386,17 +276,11 @@
       background: #ffffff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-    .light-mode .preview-page {
-      border: 1px solid #b3b3b3;
-    }
     .page-number {
       font-size: 0.8rem;
       color: #f8d7da;
       text-align: center;
       margin-top: 0.5rem;
-    }
-    .light-mode .page-number {
-      color: #3b0000;
     }
     .preview-loading {
       font-size: 0.9rem;
@@ -404,20 +288,15 @@
       text-align: center;
       margin: 1rem 0;
     }
-    .light-mode .preview-loading {
-      color: #3b0000;
-    }
     footer {
       margin-top: 1rem;
       font-size: 0.8rem;
       color: #f8d7da;
       text-align: center;
     }
-    .light-mode footer {
-      color: #3b0000;
-    }
     @media (max-width: 768px) {
-      .dashboard格-template-columns: 1fr;
+      .dashboard-grid {
+        grid-template-columns: 1fr;
       }
       .title {
         font-size: 1.6rem;
@@ -465,6 +344,9 @@
         padding: 5px 10px;
         font-size: 0.7rem;
       }
+      .form-control, .form-select, .choices__inner {
+        font-size: 0.7rem;
+      }
       .output-type-btn {
         font-size: 0.7rem;
         padding: 5px 10px;
@@ -485,11 +367,6 @@
   </style>
 </head>
 <body>
-  <!-- Mode Toggle Button -->
-  <button class="btn btn-outline-secondary mode-toggle" onclick="toggleMode()">
-    <i class="fas fa-sun"></i>
-  </button>
-
   <!-- Warning Modal -->
   <div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -603,7 +480,8 @@
     </div>
   </div>
   <footer>
-© All credit goes to Rahexa  </footer>
+    © All credit goes to Rahexa
+  </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -690,19 +568,6 @@
         modal.show();
       } catch (error) {
         console.error('Error in showWarning:', error);
-      }
-    }
-
-    // Toggle theme
-    function toggleMode() {
-      try {
-        document.body.classList.toggle('light-mode');
-        document.querySelector('.mode-toggle').innerHTML = document.body.classList.contains('light-mode')
-          ? '<i class="fas fa-moon"></i>'
-          : '<i class="fas fa-sun"></i>';
-      } catch (error) {
-        console.error('Error in toggleMode:', error);
-        showWarning('Failed to toggle theme.');
       }
     }
 
