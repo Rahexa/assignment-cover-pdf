@@ -15,17 +15,24 @@ def generate_pdf():
     data = request.form
     cover_type = data.get('coverType', 'assignment')
     template = 'cover.html' if cover_type == 'assignment' else 'lab_cover.html'
-    
+
+    # Safely get form data with fallback empty string to avoid KeyErrors
+    assignment_no = data.get('assignment_no', '')
+    course_code = data.get('course_code', '')
+    course_title = data.get('course_title', '')
+    assignment_name = data.get('assignment_name', '')
+    submission_date = data.get('submission_date', '')
+    student_name = data.get('student_name', '')
+    student_id = data.get('student_id', '')
+
     html = render_template(template,
-        assignment_no=data['assignment_no'],
-        course_code=data['course_code'],
-        course_title=data['course_title'],
-        assignment_name=data['assignment_name'],
-        submission_date=data['submission_date'],
-        student_name=data['student_name'],
-        student_id=data['student_id']
-        # ✅ teacher_name বাদ দেওয়া হয়েছে
-    )
+                           assignment_no=assignment_no,
+                           course_code=course_code,
+                           course_title=course_title,
+                           assignment_name=assignment_name,
+                           submission_date=submission_date,
+                           student_name=student_name,
+                           student_id=student_id)
 
     base_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -34,11 +41,9 @@ def generate_pdf():
         HTML(string=html, base_url=base_path).write_pdf(cover_file.name)
         cover_path = cover_file.name
 
-    # Initialize PDF merger
     merger = PdfMerger()
     merger.append(cover_path)
 
-    # Check if a file was uploaded and merge it
     upload_path = None
     if 'assignment_file' in request.files and request.files['assignment_file'].filename:
         uploaded_file = request.files['assignment_file']
@@ -56,15 +61,17 @@ def generate_pdf():
         merger.write(output_file)
         output_path = output_file.name
 
-    # Close merger after writing
     merger.close()
 
-    # Clean up temporary files
+    # Clean up temp files
     os.unlink(cover_path)
     if upload_path:
         os.unlink(upload_path)
 
     return send_file(output_path, as_attachment=True, download_name=f"{cover_type}_cover.pdf")
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
