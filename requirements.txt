@@ -1,3 +1,4 @@
 Flask
-gunicorn
 WeasyPrint
+PyPDF2
+gunicorn
