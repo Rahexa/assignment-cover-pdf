@@ -4,6 +4,7 @@ from docx import Document
 from pypdf import PdfReader, PdfWriter
 import tempfile
 import os
+import re
 
 app = Flask(__name__)
 
@@ -24,6 +25,10 @@ def generate():
     batch = data.get('batch', '').strip()
     section = data.get('section', '').strip()
     session = data.get('session', '').strip()
+
+    # Build a safe filename based on student ID
+    raw_id = data.get('student_id', '').strip()
+    safe_id = re.sub(r'[^0-9A-Za-z_-]', '', raw_id) or 'assignment'
 
     if output_type == 'cover' and output_format == 'docx':
         # Generate a simple DOCX version of the cover page
@@ -60,7 +65,7 @@ def generate():
             return send_file(
                 docx_file.name,
                 as_attachment=True,
-                download_name="assignment_cover_page.docx",
+                download_name=f"{safe_id}.docx",
             )
 
     # Decide which HTML template to use for PDF
@@ -99,7 +104,7 @@ def generate():
         return send_file(
             cover_path,
             as_attachment=True,
-            download_name="assignment_cover_page.pdf",
+            download_name=f"{safe_id}.pdf",
         )
 
     # Otherwise, merge with uploaded assignment (PDF only)
@@ -133,7 +138,7 @@ def generate():
         return send_file(
             merged_file.name,
             as_attachment=True,
-            download_name="assignment_with_cover.pdf",
+            download_name=f"{safe_id}_with_cover.pdf",
         )
 
 if __name__ == '__main__':

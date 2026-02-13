@@ -336,6 +336,28 @@
           // Clear any previous status
           setStatusMessage("");
 
+          // Enforce required non-optional fields that live in the side panel
+          if (!studentName.trim()) {
+            alert("Please enter student name.");
+            return;
+          }
+          if (!studentId.trim()) {
+            alert("Please enter student ID.");
+            return;
+          }
+          if (!batch.trim()) {
+            alert("Please enter batch.");
+            return;
+          }
+          if (!sectionValue.trim()) {
+            alert("Please enter section.");
+            return;
+          }
+          if (!session.trim()) {
+            alert("Please enter session/semester.");
+            return;
+          }
+
           // Add output type explicitly
           formData.set("output_type", outputType);
 
