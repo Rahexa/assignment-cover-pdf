@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment Cover Page - Template 3</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #e0e0e0;
+      font-family: "Times New Roman", Times, serif;
+      display: flex;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .page {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      page-break-inside: avoid;
+    }
+
+    .logo-container {
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    .logo-container img {
+      width: 100px;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    header {
+      text-align: center;
+      line-height: 1.5;
+      margin-bottom: 60px;
+    }
+
+    header h2 {
+      font-size: 1.4rem;
+      font-weight: normal;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      margin-top: 5px;
+    }
+
+    .content-body {
+      text-align: center;
+      width: 100%;
+      margin-bottom: 60px;
+    }
+
+    .cover-type-label {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .course-title {
+      font-size: 1.4rem;
+      margin-bottom: 50px;
+      color: #333;
+    }
+
+    .assignment-title {
+      font-size: 1.4rem;
+      font-weight: normal;
+      font-family: Arial, Helvetica, sans-serif;
+      display: inline-block;
+    }
+
+    .submission-section {
+      width: 85%;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .submitted-label {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table,
+    td {
+      border: 1px solid #000;
+    }
+
+    td {
+      padding: 12px 15px;
+      font-size: 1.1rem;
+    }
+
+    .label-cell {
+      width: 35%;
+      font-weight: bold;
+    }
+
+    .data-cell {
+      width: 65%;
+    }
+
+    .footer-row {
+      width: 85%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 20px;
+    }
+
+    .submitted-to-box {
+      flex: 1;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    .submitted-to-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .remarks-container {
+      text-align: center;
+    }
+
+    .remarks-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .remarks-box {
+      width: 220px;
+      height: 90px;
+      border: 1px solid #000;
+    }
+
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .page {
+        box-shadow: none;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='images/puclogo.png') }}" alt="Premier University Logo" />
+    </div>
+
+    <header>
+      <h2>Department of Computer Science &amp; Engineering</h2>
+      <h1>Premier University</h1>
+    </header>
+
+    <div class="content-body">
+      <div class="cover-type-label">
+        {{ "Lab Report" if cover_type == "lab" else "Assignment" }}
+      </div>
+      <p class="course-title">
+        {{ course_code }}: {{ course_title }}
+      </p>
+      <h2 class="assignment-title">
+        {{ assignment_name }}
+      </h2>
+    </div>
+
+    <div class="submission-section">
+      <p class="submitted-label">Submitted By:</p>
+      <table>
+        <tr>
+          <td class="label-cell">Name</td>
+          <td class="data-cell">{{ student_name }}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">ID</td>
+          <td class="data-cell">{{ student_id }}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Section</td>
+          <td class="data-cell">{{ section }}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Semester</td>
+          <td class="data-cell">{{ session }}</td>
+        </tr>
+        <tr>
+          <td class="label-cell">Submission Date</td>
+          <td class="data-cell">{{ submission_date }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="footer-row">
+      <div class="submitted-to-box">
+        <p class="submitted-to-title">Submitted To:</p>
+        {% if submitted_to or submitted_designation %}
+        {% if submitted_to %}<p>{{ submitted_to }}</p>{% endif %}
+        {% if submitted_designation %}<p>{{ submitted_designation }}</p>{% endif %}
+        {% endif %}
+      </div>
+      <div class="remarks-container">
+        <p class="remarks-label">Remarks</p>
+        <div class="remarks-box"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
