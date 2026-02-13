@@ -11,6 +11,74 @@ import os
 import re
 import base64
 
+# OOXML namespaces for DOCX
+NS = {
+    'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+    'r': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+    'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+    'pic': 'http://schemas.openxmlformats.org/drawingml/2006/picture',
+}
+
+
+def _get_paragraph_content_items(paragraph_el, doc):
+    """Extract text and inline images from a paragraph in order. Returns list of ('text', str) or ('image', bytes, content_type)."""
+    items = []
+    for run_el in paragraph_el.iterchildren('{%s}r' % NS['w']):
+        # Text in this run
+        texts = run_el.findall('.//{%s}t' % NS['w'])
+        run_text = ''.join((t.text or '') for t in texts)
+        if run_text:
+            items.append(('text', run_text))
+        # Inline drawing (image) in this run
+        blip = run_el.find('.//{%s}blip' % NS['a'])
+        if blip is not None:
+            r_id = blip.get('{%s}embed' % NS['r']) or blip.get('embed')
+            if r_id and hasattr(doc.part, 'related_parts'):
+                try:
+                    image_part = doc.part.related_parts[r_id]
+                    blob = getattr(image_part, 'blob', None) or getattr(image_part, '_blob', None)
+                    if blob:
+                        ct = getattr(image_part, 'content_type', 'image/png') or 'image/png'
+                        items.append(('image', blob, ct))
+                except Exception:
+                    pass
+    return items
+
+
+def _element_content_to_html(element_el, doc, tag='p'):
+    """Turn a block element (paragraph or cell content) into HTML, preserving text and images in order."""
+    parts = []
+    if element_el.tag != '{%s}p' % NS['w']:
+        # Maybe a single paragraph wrapper
+        for p_el in element_el.iterchildren('{%s}p' % NS['w']):
+            for item in _get_paragraph_content_items(p_el, doc):
+                if item[0] == 'text':
+                    s = item[1].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                    parts.append(s)
+                else:
+                    # image: (_, blob, content_type)
+                    b64 = base64.b64encode(item[1]).decode('ascii')
+                    mt = (item[2] if len(item) > 2 else 'image/png').split(';')[0].strip()
+                    if mt.startswith('image/'):
+                        parts.append(f'<img src="data:{mt};base64,{b64}" style="max-width:100%;height:auto;display:block;margin:8px 0;" />')
+        return ''.join(parts)
+    for item in _get_paragraph_content_items(element_el, doc):
+        if item[0] == 'text':
+            s = item[1].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            parts.append(s)
+        else:
+            b64 = base64.b64encode(item[1]).decode('ascii')
+            mt = (item[2] if len(item) > 2 else 'image/png').split(';')[0].strip()
+            if mt.startswith('image/'):
+                parts.append(f'<img src="data:{mt};base64,{b64}" style="max-width:100%;height:auto;display:block;margin:8px 0;" />')
+    inner = ''.join(parts)
+    if tag == 'td':
+        return inner
+    if not inner.strip():
+        return ''
+    return f'<{tag}>{inner}</{tag}>'
+
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -145,29 +213,29 @@ def generate():
                 assignment.save(docx_file.name)
                 docx_path = docx_file.name
             
-            # Read DOCX and convert to HTML
+            # Read DOCX and convert to HTML (including inline images)
             doc = Document(docx_path)
-            html_parts = ['<html><head><meta charset="UTF-8"><style>body{font-family:Times New Roman,serif;padding:20px;line-height:1.6;}p{margin:10px 0;}table{border-collapse:collapse;width:100%;margin:10px 0;}td,th{border:1px solid #000;padding:8px;}</style></head><body>']
-            
+            html_parts = ['<html><head><meta charset="UTF-8"><style>body{font-family:Times New Roman,serif;padding:20px;line-height:1.6;}p{margin:10px 0;}table{border-collapse:collapse;width:100%;margin:10px 0;}td,th{border:1px solid #000;padding:8px;}img{max-width:100%;height:auto;}</style></head><body>']
+
             for element in doc.element.body:
                 if isinstance(element, CT_P):
-                    para = Paragraph(element, doc)
-                    text = para.text.strip()
-                    if text:
-                        # Escape HTML special characters
-                        text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                        html_parts.append(f'<p>{text}</p>')
+                    p_html = _element_content_to_html(element, doc, 'p')
+                    if p_html:
+                        html_parts.append(p_html)
                 elif isinstance(element, CT_Tbl):
                     tbl = Table(element, doc)
                     html_parts.append('<table>')
                     for row in tbl.rows:
                         html_parts.append('<tr>')
                         for cell in row.cells:
-                            cell_text = cell.text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                            html_parts.append(f'<td>{cell_text}</td>')
+                            cell_parts = []
+                            for p_el in cell._tc.iterchildren('{%s}p' % NS['w']):
+                                cell_parts.append(_element_content_to_html(p_el, doc, 'td'))
+                            cell_html = ''.join(cell_parts) or ' '
+                            html_parts.append(f'<td>{cell_html}</td>')
                         html_parts.append('</tr>')
                     html_parts.append('</table>')
-            
+
             html_parts.append('</body></html>')
             html_content = ''.join(html_parts)
             
