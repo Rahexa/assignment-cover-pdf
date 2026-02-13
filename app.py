@@ -5,6 +5,7 @@ from pypdf import PdfReader, PdfWriter
 import tempfile
 import os
 import re
+import base64
 
 app = Flask(__name__)
 
@@ -76,8 +77,15 @@ def generate():
     else:
         template_file = 'cover.html'
 
-    # Generate absolute logo URL for WeasyPrint
-    logo_url = request.url_root.rstrip('/') + url_for('static', filename='images/puclogo.png')
+    # Embed logo as base64 data URI (fastest - no file/HTTP requests)
+    logo_path = os.path.join(app.root_path, 'static', 'images', 'puclogo.png')
+    try:
+        with open(logo_path, 'rb') as logo_file:
+            logo_data = base64.b64encode(logo_file.read()).decode('utf-8')
+            logo_url = f'data:image/png;base64,{logo_data}'
+    except FileNotFoundError:
+        # Fallback to HTTP URL if file not found
+        logo_url = request.url_root.rstrip('/') + url_for('static', filename='images/puclogo.png')
     
     # Always render the cover HTML for PDF generation
     html = render_template(
@@ -98,7 +106,7 @@ def generate():
         logo_url=logo_url,
     )
 
-    # Generate cover PDF first
+    # Generate cover PDF (base64 logo eliminates slow HTTP/file requests)
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as cover_file:
         HTML(string=html, base_url=request.url_root).write_pdf(cover_file.name)
         cover_path = cover_file.name
