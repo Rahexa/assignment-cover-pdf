@@ -23,15 +23,82 @@ NS = {
 _LOGO_DATA_URI = None
 
 
+def _get_run_formatting(run_el):
+    """Extract formatting from a run element. Returns dict with CSS-style properties."""
+    fmt = {}
+    rpr = run_el.find('{%s}rPr' % NS['w'])
+    if rpr is None:
+        return fmt
+    
+    # Bold
+    if rpr.find('{%s}b' % NS['w']) is not None:
+        fmt['font-weight'] = 'bold'
+    # Italic
+    if rpr.find('{%s}i' % NS['w']) is not None:
+        fmt['font-style'] = 'italic'
+    # Underline
+    u = rpr.find('{%s}u' % NS['w'])
+    if u is not None:
+        val = u.get('{%s}val' % NS['w'])
+        if val not in ['none', 'false']:
+            fmt['text-decoration'] = 'underline'
+    
+    # Font size (in half-points, convert to pt)
+    sz = rpr.find('{%s}sz' % NS['w'])
+    if sz is not None:
+        sz_val = sz.get('{%s}val' % NS['w'])
+        if sz_val:
+            try:
+                pt_size = int(sz_val) / 2.0
+                fmt['font-size'] = f'{pt_size:.1f}pt'
+            except:
+                pass
+    
+    # Font name
+    rfonts = rpr.find('{%s}rFonts' % NS['w'])
+    if rfonts is not None:
+        font_name = rfonts.get('{%s}ascii' % NS['w']) or rfonts.get('{%s}hAnsi' % NS['w'])
+        if font_name:
+            fmt['font-family'] = f'"{font_name}", serif'
+    
+    # Color
+    color = rpr.find('{%s}color' % NS['w'])
+    if color is not None:
+        color_val = color.get('{%s}val' % NS['w'])
+        if color_val and color_val != 'auto' and color_val.lower() != '000000':
+            # Convert hex (without #) to RGB or use hex directly
+            color_val = color_val.lstrip('#')
+            if len(color_val) == 6:
+                try:
+                    # Check if it's black (default), skip if so
+                    if color_val.lower() != '000000':
+                        r = int(color_val[0:2], 16)
+                        g = int(color_val[2:4], 16)
+                        b = int(color_val[4:6], 16)
+                        fmt['color'] = f'#{color_val}'
+                except:
+                    pass
+    
+    return fmt
+
+
+def _format_to_css(fmt_dict):
+    """Convert formatting dict to CSS string."""
+    if not fmt_dict:
+        return ''
+    return '; '.join(f'{k}: {v}' for k, v in fmt_dict.items())
+
+
 def _get_paragraph_content_items(paragraph_el, doc):
-    """Extract text and inline images from a paragraph in order. Returns list of ('text', str) or ('image', bytes, content_type)."""
+    """Extract text (with formatting) and inline images from a paragraph in order. Returns list of ('text', str, dict) or ('image', bytes, content_type)."""
     items = []
     for run_el in paragraph_el.iterchildren('{%s}r' % NS['w']):
-        # Text in this run
+        # Text in this run with formatting
         texts = run_el.findall('.//{%s}t' % NS['w'])
         run_text = ''.join((t.text or '') for t in texts)
         if run_text:
-            items.append(('text', run_text))
+            fmt = _get_run_formatting(run_el)
+            items.append(('text', run_text, fmt))
         # Inline drawing (image) in this run
         blip = run_el.find('.//{%s}blip' % NS['a'])
         if blip is not None:
@@ -48,27 +115,85 @@ def _get_paragraph_content_items(paragraph_el, doc):
     return items
 
 
+def _get_paragraph_formatting(paragraph_el):
+    """Extract paragraph-level formatting (alignment, spacing). Returns dict."""
+    fmt = {}
+    ppr = paragraph_el.find('{%s}pPr' % NS['w'])
+    if ppr is None:
+        return fmt
+    
+    # Alignment
+    jc = ppr.find('{%s}jc' % NS['w'])
+    if jc is not None:
+        align = jc.get('{%s}val' % NS['w'])
+        if align in ['left', 'center', 'right', 'both', 'justify']:
+            fmt['text-align'] = align if align != 'both' else 'justify'
+    
+    # Spacing (before/after in twips, 1pt = 20 twips)
+    spacing = ppr.find('{%s}spacing' % NS['w'])
+    if spacing is not None:
+        before = spacing.get('{%s}before' % NS['w'])
+        after = spacing.get('{%s}after' % NS['w'])
+        if before:
+            try:
+                pt_before = int(before) / 20.0
+                fmt['margin-top'] = f'{pt_before:.1f}pt'
+            except:
+                pass
+        if after:
+            try:
+                pt_after = int(after) / 20.0
+                fmt['margin-bottom'] = f'{pt_after:.1f}pt'
+            except:
+                pass
+    
+    return fmt
+
+
 def _element_content_to_html(element_el, doc, tag='p'):
-    """Turn a block element (paragraph or cell content) into HTML, preserving text and images in order."""
+    """Turn a block element (paragraph or cell content) into HTML, preserving formatting, text and images in order."""
     parts = []
     if element_el.tag != '{%s}p' % NS['w']:
         # Maybe a single paragraph wrapper
         for p_el in element_el.iterchildren('{%s}p' % NS['w']):
+            p_fmt = _get_paragraph_formatting(p_el)
+            p_style = _format_to_css(p_fmt)
+            run_parts = []
             for item in _get_paragraph_content_items(p_el, doc):
                 if item[0] == 'text':
-                    s = item[1].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-                    parts.append(s)
+                    text, fmt = item[1], item[2]
+                    s = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                    run_style = _format_to_css(fmt)
+                    if run_style:
+                        run_parts.append(f'<span style="{run_style}">{s}</span>')
+                    else:
+                        run_parts.append(s)
                 else:
                     # image: (_, blob, content_type)
                     b64 = base64.b64encode(item[1]).decode('ascii')
                     mt = (item[2] if len(item) > 2 else 'image/png').split(';')[0].strip()
                     if mt.startswith('image/'):
-                        parts.append(f'<img src="data:{mt};base64,{b64}" style="max-width:100%;height:auto;display:block;margin:8px 0;" />')
+                        run_parts.append(f'<img src="data:{mt};base64,{b64}" style="max-width:100%;height:auto;display:block;margin:8px 0;" />')
+            inner = ''.join(run_parts)
+            if inner.strip():
+                if p_style:
+                    parts.append(f'<{tag} style="{p_style}">{inner}</{tag}>')
+                else:
+                    parts.append(f'<{tag}>{inner}</{tag}>')
         return ''.join(parts)
+    
+    # Single paragraph element
+    p_fmt = _get_paragraph_formatting(element_el)
+    p_style = _format_to_css(p_fmt)
     for item in _get_paragraph_content_items(element_el, doc):
         if item[0] == 'text':
-            s = item[1].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-            parts.append(s)
+            text, fmt = item[1], item[2]
+            s = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            run_style = _format_to_css(fmt)
+            if run_style:
+                parts.append(f'<span style="{run_style}">{s}</span>')
+            else:
+                parts.append(s)
         else:
             b64 = base64.b64encode(item[1]).decode('ascii')
             mt = (item[2] if len(item) > 2 else 'image/png').split(';')[0].strip()
@@ -79,6 +204,8 @@ def _element_content_to_html(element_el, doc, tag='p'):
         return inner
     if not inner.strip():
         return ''
+    if p_style:
+        return f'<{tag} style="{p_style}">{inner}</{tag}>'
     return f'<{tag}>{inner}</{tag}>'
 
 
@@ -230,9 +357,10 @@ def generate():
                 assignment.save(docx_file.name)
                 docx_path = docx_file.name
             
-            # Read DOCX and convert to HTML (including inline images)
+            # Read DOCX and convert to HTML (preserving formatting, images, etc.)
             doc = Document(docx_path)
-            html_parts = ['<html><head><meta charset="UTF-8"><style>body{font-family:Times New Roman,serif;padding:20px;line-height:1.6;}p{margin:10px 0;}table{border-collapse:collapse;width:100%;margin:10px 0;}td,th{border:1px solid #000;padding:8px;}img{max-width:100%;height:auto;}</style></head><body>']
+            # Minimal base CSS - DOCX formatting will override via inline styles
+            html_parts = ['<html><head><meta charset="UTF-8"><style>body{font-family:"Times New Roman",Times,serif;padding:20px;line-height:1.5;color:#000;}p{margin:6px 0;}table{border-collapse:collapse;width:100%;margin:10px 0;}td,th{border:1px solid #000;padding:4px 8px;vertical-align:top;}img{max-width:100%;height:auto;display:block;margin:4px 0;}span{display:inline;}</style></head><body>']
 
             for element in doc.element.body:
                 if isinstance(element, CT_P):
