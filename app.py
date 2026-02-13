@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, send_file, url_for
 from weasyprint import HTML
 from docx import Document
+from docx.oxml.text.paragraph import CT_P
+from docx.oxml.table import CT_Tbl
+from docx.table import Table
+from docx.text.paragraph import Paragraph
 from pypdf import PdfReader, PdfWriter
 import tempfile
 import os
@@ -119,7 +123,7 @@ def generate():
             download_name=f"{safe_id}.pdf",
         )
 
-    # Otherwise, merge with uploaded assignment (PDF only)
+    # Otherwise, merge with uploaded assignment (PDF, DOC, DOCX)
     assignment = files.get('assignment_file')
     if not assignment or assignment.filename == '':
         return "No assignment file provided for merge.", 400
@@ -127,12 +131,63 @@ def generate():
     _, ext = os.path.splitext(assignment.filename)
     ext = ext.lower()
 
-    if ext != '.pdf':
-        return "Merging is currently supported for PDF files only. Please export your DOC/DOCX as PDF first.", 400
-
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as assignment_file:
-        assignment.save(assignment_file.name)
-        assignment_path = assignment_file.name
+    # Handle different file types
+    if ext == '.pdf':
+        # Direct PDF - save and use
+        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as assignment_file:
+            assignment.save(assignment_file.name)
+            assignment_path = assignment_file.name
+    elif ext == '.docx':
+        # Convert DOCX to PDF first
+        try:
+            # Save uploaded file temporarily
+            with tempfile.NamedTemporaryFile(suffix='.docx', delete=False) as docx_file:
+                assignment.save(docx_file.name)
+                docx_path = docx_file.name
+            
+            # Read DOCX and convert to HTML
+            doc = Document(docx_path)
+            html_parts = ['<html><head><meta charset="UTF-8"><style>body{font-family:Times New Roman,serif;padding:20px;line-height:1.6;}p{margin:10px 0;}table{border-collapse:collapse;width:100%;margin:10px 0;}td,th{border:1px solid #000;padding:8px;}</style></head><body>']
+            
+            for element in doc.element.body:
+                if isinstance(element, CT_P):
+                    para = Paragraph(element, doc)
+                    text = para.text.strip()
+                    if text:
+                        # Escape HTML special characters
+                        text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                        html_parts.append(f'<p>{text}</p>')
+                elif isinstance(element, CT_Tbl):
+                    tbl = Table(element, doc)
+                    html_parts.append('<table>')
+                    for row in tbl.rows:
+                        html_parts.append('<tr>')
+                        for cell in row.cells:
+                            cell_text = cell.text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+                            html_parts.append(f'<td>{cell_text}</td>')
+                        html_parts.append('</tr>')
+                    html_parts.append('</table>')
+            
+            html_parts.append('</body></html>')
+            html_content = ''.join(html_parts)
+            
+            # Convert HTML to PDF
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as pdf_file:
+                HTML(string=html_content, base_url=request.url_root).write_pdf(pdf_file.name)
+                assignment_path = pdf_file.name
+            
+            # Clean up DOCX temp file
+            try:
+                os.unlink(docx_path)
+            except:
+                pass
+        except Exception as e:
+            return f"Error converting DOCX to PDF: {str(e)}. Please ensure the file is a valid DOCX document.", 400
+    elif ext == '.doc':
+        # DOC format (older format) - python-docx doesn't support it
+        return "DOC files (older format) are not supported. Please convert your file to DOCX or PDF format first.", 400
+    else:
+        return f"Unsupported file type: {ext}. Please use PDF, DOC, or DOCX files.", 400
 
     writer = PdfWriter()
     # Add cover pages
