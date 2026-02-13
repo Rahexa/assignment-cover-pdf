@@ -19,6 +19,9 @@ NS = {
     'pic': 'http://schemas.openxmlformats.org/drawingml/2006/picture',
 }
 
+# Cache for base64-encoded logo so we don't read/encode it on every request
+_LOGO_DATA_URI = None
+
 
 def _get_paragraph_content_items(paragraph_el, doc):
     """Extract text and inline images from a paragraph in order. Returns list of ('text', str) or ('image', bytes, content_type)."""
@@ -77,6 +80,24 @@ def _element_content_to_html(element_el, doc, tag='p'):
     if not inner.strip():
         return ''
     return f'<{tag}>{inner}</{tag}>'
+
+
+def _get_logo_data_uri():
+    """Return a cached base64 data URI for the logo image."""
+    global _LOGO_DATA_URI
+    if _LOGO_DATA_URI is not None:
+        return _LOGO_DATA_URI
+
+    logo_path = os.path.join(app.root_path, 'static', 'images', 'puclogo.png')
+    try:
+        with open(logo_path, 'rb') as logo_file:
+            logo_data = base64.b64encode(logo_file.read()).decode('utf-8')
+            _LOGO_DATA_URI = f'data:image/png;base64,{logo_data}'
+    except FileNotFoundError:
+        # Fallback to HTTP URL if file not found
+        _LOGO_DATA_URI = None
+
+    return _LOGO_DATA_URI
 
 
 app = Flask(__name__)
@@ -149,14 +170,10 @@ def generate():
     else:
         template_file = 'cover.html'
 
-    # Embed logo as base64 data URI (fastest - no file/HTTP requests)
-    logo_path = os.path.join(app.root_path, 'static', 'images', 'puclogo.png')
-    try:
-        with open(logo_path, 'rb') as logo_file:
-            logo_data = base64.b64encode(logo_file.read()).decode('utf-8')
-            logo_url = f'data:image/png;base64,{logo_data}'
-    except FileNotFoundError:
-        # Fallback to HTTP URL if file not found
+    # Embed logo as base64 data URI (cached, no file/HTTP requests per request)
+    logo_url = _get_logo_data_uri()
+    if not logo_url:
+        # Fallback to HTTP URL if file not found or failed to load
         logo_url = request.url_root.rstrip('/') + url_for('static', filename='images/puclogo.png')
     
     # Always render the cover HTML for PDF generation
@@ -273,7 +290,7 @@ def generate():
         return send_file(
             merged_file.name,
             as_attachment=True,
-            download_name=f"{safe_id}_with_cover.pdf",
+            download_name=f"{safe_id}.pdf",
         )
 
 if __name__ == '__main__':
