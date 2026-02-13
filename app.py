@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, url_for
 from weasyprint import HTML
 from docx import Document
 from pypdf import PdfReader, PdfWriter
@@ -76,6 +76,9 @@ def generate():
     else:
         template_file = 'cover.html'
 
+    # Generate absolute logo URL for WeasyPrint
+    logo_url = request.url_root.rstrip('/') + url_for('static', filename='images/puclogo.png')
+    
     # Always render the cover HTML for PDF generation
     html = render_template(
         template_file,
@@ -92,6 +95,7 @@ def generate():
         batch=batch,
         section=section,
         session=session,
+        logo_url=logo_url,
     )
 
     # Generate cover PDF first
