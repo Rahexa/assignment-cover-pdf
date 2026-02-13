@@ -1,7 +1,15 @@
 [project]
-name = "python-template"
+name = "assignment-cover-pdf"
 version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+description = "Assignment Cover Page Generator"
+authors = [
+    {name = "Rahexa", email = "rahexa@example.com"}
+]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "Flask",
+    "WeasyPrint",
+    "python-docx",
+    "pypdf",
+    "gunicorn"
+]
