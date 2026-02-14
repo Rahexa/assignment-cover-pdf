@@ -229,6 +229,14 @@ def _get_logo_data_uri():
 
 app = Flask(__name__)
 
+
+@app.route('/health')
+@app.route('/ping')
+def health():
+    """Lightweight endpoint for Uptime Robot / cron to keep Render free tier alive. No heavy imports or work."""
+    return 'ok', 200, {'Content-Type': 'text/plain'}
+
+
 @app.route('/')
 def index():
     return render_template("index.html")

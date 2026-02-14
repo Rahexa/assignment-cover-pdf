@@ -3,5 +3,6 @@ services:
     name: assignment-cover
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python app.py
+    # 1 worker keeps free tier within memory; use /health or /ping for Uptime Robot
+    startCommand: gunicorn --workers 1 --threads 2 --bind 0.0.0.0:$PORT --timeout 120 app:app
     plan: free

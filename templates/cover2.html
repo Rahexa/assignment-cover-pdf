@@ -223,9 +223,8 @@
     <div class="submitted-to-block">
       <span class="submitted-to-label">Submitted to</span><br />
       {% if submitted_to or submitted_designation %}
-      <strong>Submitted to:</strong><br />
       {% if submitted_to %}{{ submitted_to }}<br />{% endif %}
-      {% if submitted_designation %}{{ submitted_designation }}<br />{% endif %}
+      {% if submitted_designation %}{{ submitted_designation }}{% endif %}
       {% endif %}
     </div>
   </div>
