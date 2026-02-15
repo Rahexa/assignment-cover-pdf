@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, send_file, url_for
 from weasyprint import HTML
+from io import BytesIO
 from docx import Document
 from docx.oxml.text.paragraph import CT_P
 from docx.oxml.table import CT_Tbl
@@ -210,18 +211,31 @@ def _element_content_to_html(element_el, doc, tag='p'):
 
 
 def _get_logo_data_uri():
-    """Return a cached base64 data URI for the logo image."""
+    """Return a cached base64 data URI for the logo image (resized for faster PDF generation)."""
     global _LOGO_DATA_URI
     if _LOGO_DATA_URI is not None:
         return _LOGO_DATA_URI
 
     logo_path = os.path.join(app.root_path, 'static', 'images', 'puclogo.png')
     try:
-        with open(logo_path, 'rb') as logo_file:
-            logo_data = base64.b64encode(logo_file.read()).decode('utf-8')
+        try:
+            from PIL import Image
+            with Image.open(logo_path) as img:
+                img.load()
+                w, h = img.size
+                if w > 200:
+                    ratio = 200 / w
+                    new_size = (200, int(h * ratio))
+                    img = img.resize(new_size, Image.LANCZOS)
+                buf = BytesIO()
+                img.save(buf, format='PNG', optimize=False)
+                logo_data = base64.b64encode(buf.getvalue()).decode('ascii')
             _LOGO_DATA_URI = f'data:image/png;base64,{logo_data}'
+        except Exception:
+            with open(logo_path, 'rb') as logo_file:
+                logo_data = base64.b64encode(logo_file.read()).decode('utf-8')
+                _LOGO_DATA_URI = f'data:image/png;base64,{logo_data}'
     except FileNotFoundError:
-        # Fallback to HTTP URL if file not found
         _LOGO_DATA_URI = None
 
     return _LOGO_DATA_URI
@@ -336,7 +350,7 @@ def generate():
         logo_url=logo_url,
     )
 
-    # Generate cover PDF (base64 logo eliminates slow HTTP/file requests)
+    # Generate cover PDF (cached resized logo = smaller payload, faster render)
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as cover_file:
         HTML(string=html, base_url=request.url_root).write_pdf(cover_file.name)
         cover_path = cover_file.name

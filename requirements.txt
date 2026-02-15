@@ -3,3 +3,4 @@ WeasyPrint
 python-docx
 pypdf
 gunicorn
+Pillow
