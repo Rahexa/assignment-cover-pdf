@@ -62,8 +62,8 @@
         margin-bottom: 0.2rem;
       }
       .template-options {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 0.35rem;
       }
       .template-card {
@@ -766,7 +766,7 @@
                   <div className="panel-section">
                     <div className="panel-section-title">Template selection</div>
                     <div className="template-options">
-                      {["template1", "template2", "template3"].map((t, idx) => (
+                      {["template1", "template2", "template3", "template4"].map((t, idx) => (
                         <label
                           key={t}
                           className={

@@ -305,6 +305,8 @@ def generate():
         template_file = 'cover2.html'
     elif template_key == 'template3':
         template_file = 'cover3.html'
+    elif template_key == 'template4':
+        template_file = 'cover4.html'
     else:
         template_file = 'cover.html'
 
