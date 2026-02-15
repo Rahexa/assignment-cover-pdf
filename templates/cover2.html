@@ -31,14 +31,15 @@
     }
 
     .uni-name {
-      font-size: 48pt;
+      font-size: 42pt;
       font-family: "Old English Text MT", "Engravers MT", "Times New Roman", serif;
       margin: 0;
       font-weight: normal;
+      line-height: 1.2;
     }
 
     .logo-box {
-      margin: 30px auto;
+      margin: 24px auto;
     }
     .logo-box img {
       width: 140px;
@@ -49,67 +50,79 @@
 
     .divider {
       border-top: 1px solid #000;
-      margin-top: 40px;
+      margin-top: 32px;
       width: 100%;
     }
 
     .assignment-label {
-      font-size: 14pt;
-      margin: 10px 0 5px 0;
+      font-size: 13pt;
+      margin: 0 0 6px 0;
+      color: #333;
     }
 
     .topic-title {
       color: #1a4a8e;
-      font-size: 22pt;
+      font-size: 20pt;
       font-weight: bold;
       text-transform: uppercase;
-      margin: 10px 0;
+      margin: 0 0 8px 0;
+      line-height: 1.25;
+      letter-spacing: 0.02em;
+    }
+
+    .assignment-no-line {
+      font-size: 12pt;
+      color: #555;
+      margin: 0 0 28px 0;
     }
 
     .course-info {
       color: #8e44ad;
       font-style: italic;
-      font-size: 15pt;
-      line-height: 1.6;
-      margin-bottom: 50px;
+      font-size: 14pt;
+      line-height: 1.5;
+      margin-bottom: 42px;
     }
 
     .info-container {
       display: flex;
       flex-direction: column;
-      gap: 45px;
+      gap: 38px;
       text-align: center;
     }
 
     .section-title {
-      font-size: 14pt;
+      font-size: 13pt;
       font-weight: bold;
-      text-decoration: underline;
-      margin-bottom: 8px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      display: inline-block;
     }
 
     .person-name {
-      font-size: 18pt;
+      font-size: 16pt;
       font-weight: bold;
-      margin: 4px 0;
+      margin: 0 0 6px 0;
     }
 
     .details {
-      font-size: 13pt;
-      margin: 2px 0;
+      font-size: 12pt;
+      margin: 0 0 4px 0;
+      line-height: 1.4;
     }
 
     .footer {
       position: absolute;
-      bottom: 30mm;
+      bottom: 28mm;
       left: 25mm;
       right: 25mm;
       border-bottom: 1px solid #000;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
     }
 
     .date {
-      font-size: 14pt;
+      font-size: 12pt;
       font-weight: bold;
     }
 
@@ -133,8 +146,11 @@
 
     <div class="divider"></div>
 
-    <p class="assignment-label">{{ "Lab Report on" if cover_type == "lab" else "Assignment on" }}{% if assignment_no %} &mdash; {{ "Lab Report No." if cover_type == "lab" else "Assignment No." }} {{ assignment_no }}{% endif %}</p>
+    <p class="assignment-label">{{ "Lab Report on" if cover_type == "lab" else "Assignment on" }}</p>
     <h2 class="topic-title">{{ assignment_name }}</h2>
+    {% if assignment_no %}
+    <p class="assignment-no-line">{{ "Lab Report No." if cover_type == "lab" else "Assignment No." }} {{ assignment_no }}</p>
+    {% endif %}
 
     <div class="course-info">
       Course Title: {{ course_title }}<br />
