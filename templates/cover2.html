@@ -33,7 +33,7 @@
       margin-bottom: 10px;
     }
     .header-logo img {
-      width: 90px;
+      width: 110px;
       height: auto;
       object-fit: contain;
     }
@@ -195,6 +195,13 @@
           {{ assignment_name }}
         </td>
       </tr>
+      {% if performance_date %}
+      <tr>
+        <td class="label">Date of Performance</td>
+        <td class="colon">:</td>
+        <td class="value">{{ performance_date }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <td class="label">Date of Submission</td>
         <td class="colon">:</td>

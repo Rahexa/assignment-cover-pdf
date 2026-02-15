@@ -254,6 +254,7 @@ def generate():
     batch = data.get('batch', '').strip()
     section = data.get('section', '').strip()
     session = data.get('session', '').strip()
+    performance_date = data.get('performance_date', '').strip()
 
     # Build a safe filename based on student ID
     raw_id = data.get('student_id', '').strip()
@@ -271,6 +272,8 @@ def generate():
         document.add_paragraph(f"Course Code: {data['course_code']}")
         document.add_paragraph(f"Course Title: {data['course_title']}")
         document.add_paragraph(f"{name_label}: {data['assignment_name']}")
+        if performance_date:
+            document.add_paragraph(f"Date of Performance: {performance_date}")
         document.add_paragraph(f"Date of Submission: {data['submission_date']}")
         document.add_paragraph("")
         document.add_paragraph(f"Student Name: {data['student_name']}")
@@ -318,6 +321,7 @@ def generate():
         course_code=data['course_code'],
         course_title=data['course_title'],
         assignment_name=data['assignment_name'],
+        performance_date=performance_date,
         submission_date=data['submission_date'],
         student_name=data['student_name'],
         student_id=data['student_id'],

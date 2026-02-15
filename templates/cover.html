@@ -32,7 +32,7 @@
     }
 
     .header img {
-      width: 90px;
+      width: 110px;
       height: auto;
       object-fit: contain;
       display: block;
@@ -208,6 +208,12 @@
       <div class="value {% if assignment_name|length > 80 %}assignment-name-very-long{% elif assignment_name|length > 45 %}assignment-name-long{% else %}assignment-name-short{% endif %}">
         {{ assignment_name }}
       </div>
+
+      {% if performance_date %}
+      <div class="label">Date of Performance</div>
+      <div class="colon">:</div>
+      <div class="value">{{ performance_date }}</div>
+      {% endif %}
 
       <div class="label">Date of Submission</div>
       <div class="colon">:</div>

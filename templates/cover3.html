@@ -42,7 +42,7 @@
     }
 
     .logo-container img {
-      width: 100px;
+      width: 118px;
       height: auto;
       object-fit: contain;
       display: block;
@@ -215,6 +215,12 @@
           <td class="label-cell">Semester</td>
           <td class="data-cell">{{ session }}</td>
         </tr>
+        {% if performance_date %}
+        <tr>
+          <td class="label-cell">Date of Performance</td>
+          <td class="data-cell">{{ performance_date }}</td>
+        </tr>
+        {% endif %}
         <tr>
           <td class="label-cell">Submission Date</td>
           <td class="data-cell">{{ submission_date }}</td>
