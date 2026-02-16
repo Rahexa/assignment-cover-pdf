@@ -1,191 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Premier University Assignment Cover - Template 2</title>
+  <title>Assignment Cover Page - Template 2</title>
   <style>
     @page {
       size: A4;
-      margin: 0;
+      margin: 20mm 15mm;
     }
+
     body {
-      background-color: #e0e0e0;
-      margin: 0;
-      padding: 40px 0;
-      display: flex;
-      justify-content: center;
       font-family: "Times New Roman", Times, serif;
-    }
-
-    .page {
-      background-color: white;
-      width: 210mm;
-      min-height: 297mm;
-      padding: 25mm;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      box-sizing: border-box;
-      text-align: center;
-      position: relative;
-      border: 1px solid #d3d3d3;
-    }
-
-    .uni-name {
-      font-size: 42pt;
-      font-family: "Old English Text MT", "Engravers MT", "Times New Roman", serif;
       margin: 0;
-      font-weight: normal;
+      padding: 0;
+      background: white;
+    }
+
+    .container {
+      max-width: 185mm;
+      margin: 0 auto;
+      border: 3px double #000;
+      padding: 25px 25px 20px;
+      box-sizing: border-box;
+      margin-top: 15px;
+      page-break-inside: avoid;
+      /* Fixed height so bottom border sits lower but with less empty space */
+      height: 245mm;
+    }
+
+    .header-block {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header-logo {
+      margin-bottom: 10px;
+    }
+
+    .header-logo img {
+      width: 90px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .university-name {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .department-name {
+      font-size: 18px;
+      margin-top: 4px;
+    }
+
+    .title-box {
+      margin: 20px auto 10px;
+      padding: 8px 20px;
+      border: 2px solid #000;
+      display: block;
+      width: fit-content;
+      font-size: 26px;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .assignment-info {
+      margin-top: 28px;
+      margin-bottom: 38px;
+      /* extra space below course details */
+      font-size: 18px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .assignment-info td.label {
+      width: 30%;
+      padding: 8px 10px;
+      white-space: nowrap;
+    }
+
+    .assignment-info td.colon {
+      width: 3%;
+      text-align: center;
+      padding: 8px 0;
+    }
+
+    .assignment-info td.value {
+      width: 67%;
+      font-weight: bold;
+      padding: 8px 10px;
+    }
+
+    .assignment-name-short {
+      font-size: 18px;
       line-height: 1.2;
     }
 
-    .logo-box {
-      margin: 24px auto;
-    }
-    .logo-box img {
-      width: 140px;
-      height: auto;
-      display: block;
-      margin: 0 auto;
+    .assignment-name-long {
+      font-size: 16px;
+      line-height: 1.2;
     }
 
-    .divider {
-      border-top: 1px solid #000;
-      margin-top: 32px;
-      width: 100%;
+    .assignment-name-very-long {
+      font-size: 14px;
+      line-height: 1.15;
     }
 
-    .assignment-label {
-      font-size: 13pt;
-      margin: 0 0 6px 0;
-      color: #333;
-    }
-
-    .topic-title {
-      color: #1a4a8e;
-      font-size: 20pt;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin: 0 0 8px 0;
-      line-height: 1.25;
-      letter-spacing: 0.02em;
-    }
-
-    .assignment-no-line {
-      font-size: 12pt;
-      color: #555;
-      margin: 0 0 28px 0;
-    }
-
-    .course-info {
-      color: #8e44ad;
-      font-style: italic;
-      font-size: 14pt;
-      line-height: 1.5;
-      margin-bottom: 42px;
-    }
-
-    .info-container {
+    .section-wrapper {
       display: flex;
-      flex-direction: column;
-      gap: 38px;
-      text-align: center;
+      justify-content: space-between;
+      margin-top: 40px;
+      /* a bit more gap after course table */
+      font-size: 18px;
+      gap: 25px;
+      page-break-inside: avoid;
+    }
+
+    .submitted-by-block {
+      flex: 1.2;
+      border: 1px solid #000;
+      padding: 10px 12px;
     }
 
     .section-title {
-      font-size: 13pt;
       font-weight: bold;
-      border-bottom: 1px solid #000;
-      padding-bottom: 6px;
-      margin-bottom: 12px;
-      display: inline-block;
+      font-size: 20px;
+      text-decoration: underline;
+      margin-bottom: 10px;
     }
 
-    .person-name {
-      font-size: 16pt;
-      font-weight: bold;
-      margin: 0 0 6px 0;
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 18px;
     }
 
-    .details {
-      font-size: 12pt;
-      margin: 0 0 4px 0;
-      line-height: 1.4;
+    .info-table th,
+    .info-table td {
+      padding: 4px 6px;
+      text-align: left;
     }
 
-    .footer {
+    .info-table th {
+      width: 35%;
+    }
+
+    .remarks-box {
+      flex: 0.9;
+      border: 2px solid #000;
+      height: 130px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      user-select: none;
+    }
+
+    .remarks-text {
       position: absolute;
-      bottom: 28mm;
-      left: 25mm;
-      right: 25mm;
+      top: 8px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: bold;
       border-bottom: 1px solid #000;
-      padding-bottom: 8px;
+      padding-bottom: 4px;
     }
 
-    .date {
-      font-size: 12pt;
+    .submitted-to-block {
+      margin-top: 45px;
+      /* more space after "Submitted by" block */
+      font-size: 18px;
+      page-break-inside: avoid;
+      min-height: 70px;
+      /* keep height consistent whether empty or filled */
+    }
+
+    .submitted-to-label {
       font-weight: bold;
-    }
-
-    .dept-highlight {
-      font-weight: bold;
-    }
-
-    @media print {
-      body { background: none; padding: 0; }
-      .page { box-shadow: none; border: none; }
+      text-decoration: underline;
+      margin-bottom: 6px;
+      display: inline-block;
     }
   </style>
 </head>
+
 <body>
-  <div class="page">
-    <h1 class="uni-name">Premier University</h1>
-
-    <div class="logo-box">
-      <img src="{{ logo_url }}" alt="Premier University Logo" />
+  <div class="container">
+    <div class="header-block">
+      <div class="header-logo">
+        <img src="{{ logo_url }}" alt="Premier University Logo" />
+      </div>
+      <div class="university-name">PREMIER UNIVERSITY</div>
+      <div class="department-name">Department of Computer Science &amp; Engineering</div>
     </div>
 
-    <div class="divider"></div>
-
-    <p class="assignment-label">{{ "Lab Report on" if cover_type == "lab" else "Assignment on" }}</p>
-    <h2 class="topic-title">{{ assignment_name }}</h2>
-    {% if assignment_no %}
-    <p class="assignment-no-line">{{ "Lab Report No." if cover_type == "lab" else "Assignment No." }} {{ assignment_no }}</p>
-    {% endif %}
-
-    <div class="course-info">
-      Course Title: {{ course_title }}<br />
-      Course Code: {{ course_code }}
+    <div class="title-box">
+      {{ "LAB REPORT" if cover_type == "lab" else "ASSIGNMENT" }}
     </div>
 
-    <div class="info-container">
-      <div class="prepared-for">
-        <div class="section-title">Prepared for:</div>
-        {% if submitted_to or submitted_designation %}
-        <div class="person-name">{{ submitted_to }}</div>
-        {% if submitted_designation %}
-        <div class="details">{{ submitted_designation }}</div>
-        {% endif %}
-        {% else %}
-        <div class="details">—</div>
-        {% endif %}
+    <table class="assignment-info">
+      <tr>
+        <td class="label">{{ "Lab Report No." if cover_type == "lab" else "Assignment No." }}</td>
+        <td class="colon">:</td>
+        <td class="value">{{ assignment_no }}</td>
+      </tr>
+      <tr>
+        <td class="label">Course Code</td>
+        <td class="colon">:</td>
+        <td class="value">{{ course_code }}</td>
+      </tr>
+      <tr>
+        <td class="label">Course Title</td>
+        <td class="colon">:</td>
+        <td class="value">{{ course_title }}</td>
+      </tr>
+      <tr>
+        <td class="label">{{ "Lab Report Name" if cover_type == "lab" else "Assignment Name" }}</td>
+        <td class="colon">:</td>
+        <td
+          class="value {% if assignment_name|length > 80 %}assignment-name-very-long{% elif assignment_name|length > 45 %}assignment-name-long{% else %}assignment-name-short{% endif %}">
+          {{ assignment_name }}
+        </td>
+      </tr>
+      <tr>
+        <td class="label">Date of Submission</td>
+        <td class="colon">:</td>
+        <td class="value">{{ submission_date }}</td>
+      </tr>
+    </table>
+
+    <div class="section-wrapper">
+      <div class="submitted-by-block">
+        <div class="section-title">Submitted by</div>
+        <table class="info-table">
+          <tr>
+            <th>Name</th>
+            <td>{{ student_name }}</td>
+          </tr>
+          <tr>
+            <th>ID</th>
+            <td>{{ student_id }}</td>
+          </tr>
+          <tr>
+            <th>Program</th>
+            <td>B.Sc. in CSE</td>
+          </tr>
+          <tr>
+            <th>Batch</th>
+            <td>{{ batch }}</td>
+          </tr>
+          <tr>
+            <th>Section</th>
+            <td>{{ section }}</td>
+          </tr>
+          <tr>
+            <th>Session</th>
+            <td>{{ session }}</td>
+          </tr>
+        </table>
       </div>
 
-      <div class="prepared-by">
-        <div class="section-title">Prepared by:</div>
-        <div class="person-name">{{ student_name }}</div>
-        <div class="details">ID no: {{ student_id }}, Sec: {{ section }}</div>
-        <div class="details dept-highlight">Dept. of CSE</div>
-        {% if batch %}<div class="details">Batch: {{ batch }}</div>{% endif %}
-        {% if session %}<div class="details">Session: {{ session }}</div>{% endif %}
+      <div class="remarks-box">
+        <div class="remarks-text">Remarks</div>
       </div>
     </div>
 
-    <div class="footer">
-      {% if performance_date %}
-      <span class="date">Date of Performance: {{ performance_date }}</span><br />
+    <div class="submitted-to-block">
+      <span class="submitted-to-label">Submitted to</span><br />
+      {% if submitted_to or submitted_designation %}
+      <strong>Submitted to:</strong><br />
+      {% if submitted_to %}{{ submitted_to }}<br />{% endif %}
+      {% if submitted_designation %}{{ submitted_designation }}<br />{% endif %}
       {% endif %}
-      <span class="date">Date of Submission: {{ submission_date }}</span>
     </div>
   </div>
 </body>
+
 </html>
