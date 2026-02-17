@@ -274,45 +274,7 @@ def generate():
     raw_id = data.get('student_id', '').strip()
     safe_id = re.sub(r'[^0-9A-Za-z_-]', '', raw_id) or 'assignment'
 
-    if output_type == 'cover' and output_format == 'docx':
-        # Generate a simple DOCX version of the cover page
-        document = Document()
-        heading = 'Lab Report Cover Page' if cover_type == 'lab' else 'Assignment Cover Page'
-        no_label = 'Lab Report No.' if cover_type == 'lab' else 'Assignment No.'
-        name_label = 'Lab Report Name' if cover_type == 'lab' else 'Assignment Name'
-        document.add_heading(heading, level=0)
 
-        document.add_paragraph(f"{no_label}: {data['assignment_no']}")
-        document.add_paragraph(f"Course Code: {data['course_code']}")
-        document.add_paragraph(f"Course Title: {data['course_title']}")
-        document.add_paragraph(f"{name_label}: {data['assignment_name']}")
-        if performance_date:
-            document.add_paragraph(f"Date of Performance: {performance_date}")
-        document.add_paragraph(f"Date of Submission: {data['submission_date']}")
-        document.add_paragraph("")
-        document.add_paragraph(f"Student Name: {data['student_name']}")
-        document.add_paragraph(f"ID: {data['student_id']}")
-        if batch:
-            document.add_paragraph(f"Batch: {batch}")
-        if section:
-            document.add_paragraph(f"Section: {section}")
-        if session:
-            document.add_paragraph(f"Session: {session}")
-        document.add_paragraph("")
-        if submitted_to or submitted_designation:
-            document.add_paragraph("Submitted to:")
-            if submitted_to:
-                document.add_paragraph(submitted_to)
-            if submitted_designation:
-                document.add_paragraph(submitted_designation)
-
-        with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as docx_file:
-            document.save(docx_file.name)
-            return send_file(
-                docx_file.name,
-                as_attachment=True,
-                download_name=f"{safe_id}.docx",
-            )
 
     # Decide which HTML template to use for PDF
     if template_key == 'template2':

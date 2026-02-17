@@ -1,802 +1,832 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Assignment Cover Page Generator</title>
-    <link
-      rel="icon"
-      type="image/png"
-      href="{{ url_for('static', filename='images/puclogo.png') }}"
-    />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top left, #1e293b 0%, #020617 55%, #000000 100%);
-        color: #e5e7eb;
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment Cover Page Generator</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/puclogo.png') }}" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1e293b 0%, #020617 55%, #000000 100%);
+      color: #e5e7eb;
+    }
+
+    .app-root {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: #020617;
+      padding: 1.5rem 1.75rem;
+      border-radius: 16px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.85);
+      max-width: 1040px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #1f2937;
+    }
+
+    .card-content {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .left-column {
+      flex: 3;
+    }
+
+    .right-panel {
+      flex: 2;
+      border-left: 1px solid #1f2937;
+      padding-left: 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .panel-section-title {
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: #e5e7eb;
+    }
+
+    .panel-box {
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      padding: 0.4rem 0.5rem;
+      background: #020617;
+      margin-bottom: 0.2rem;
+    }
+
+    .template-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.35rem;
+    }
+
+    .template-card {
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      padding: 0.35rem 0.45rem;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+
+    .template-card.selected {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+    }
+
+    .template-card input {
+      margin: 0;
+    }
+
+    .card h2 {
+      margin: 0 0 0.75rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #f9fafb;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    .field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .field label {
+      font-weight: 600;
+      color: #e5e7eb;
+      margin-bottom: 2px;
+    }
+
+    .field input,
+    .field select {
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      font-size: 0.8rem;
+      background: #020617;
+      color: #e5e7eb;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+    }
+
+    .field input[type="date"] {
+      color: #38bdf8;
+      border-color: #0ea5e9;
+      background: rgba(14, 165, 233, 0.08);
+    }
+
+    .field input[type="date"]:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+    }
+
+    .field input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.8);
+    }
+
+    .button-row {
+      margin-top: 0.85rem;
+      text-align: center;
+    }
+
+    .button-row button {
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      color: #020617;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .button-row button[disabled] {
+      opacity: 0.7;
+      cursor: default;
+    }
+
+    .button-row .btn-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(2, 6, 23, 0.3);
+      border-top-color: #020617;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
-      .app-root {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-      }
-      .card {
-        background: #020617;
-        padding: 1.5rem 1.75rem;
-        border-radius: 16px;
-        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.85);
-        max-width: 1040px;
-        width: 100%;
-        box-sizing: border-box;
-        border: 1px solid #1f2937;
-      }
+    }
+
+    .status-message {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #bbf7d0;
+    }
+
+    .course-code-readonly {
+      background: #f9fafb;
+      color: #6b7280;
+    }
+
+    .output-toggle {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .output-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .file-hint {
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .course-suggestions {
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      max-height: 140px;
+      overflow-y: auto;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.8);
+      font-size: 0.75rem;
+      z-index: 10;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+    }
+
+    .course-suggestion-item {
+      padding: 4px 8px;
+      cursor: pointer;
+      color: #e5e7eb;
+    }
+
+    .course-suggestion-item:hover {
+      background: #1f2937;
+    }
+
+    .course-field {
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
       .card-content {
-        display: flex;
-        gap: 1rem;
+        flex-direction: column;
       }
-      .left-column {
-        flex: 3;
-      }
+
       .right-panel {
-        flex: 2;
-        border-left: 1px solid #1f2937;
-        padding-left: 0.75rem;
-        font-size: 0.8rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
+        border-left: none;
+        border-top: 1px solid #e5e7eb;
+        padding-left: 0;
+        padding-top: 0.75rem;
       }
-      .panel-section-title {
-        font-weight: 700;
-        margin-bottom: 0.35rem;
-        color: #e5e7eb;
-      }
-      .panel-box {
-        border-radius: 6px;
-        border: 1px solid #1f2937;
-        padding: 0.4rem 0.5rem;
-        background: #020617;
-        margin-bottom: 0.2rem;
-      }
-      .template-options {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.35rem;
-      }
-      .template-card {
-        border-radius: 6px;
-        border: 1px solid #1f2937;
-        padding: 0.35rem 0.45rem;
-        background: #020617;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        cursor: pointer;
-      }
-      .template-card.selected {
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
-      }
-      .template-card input {
-        margin: 0;
-      }
-      .card h2 {
-        margin: 0 0 0.75rem;
-        text-align: center;
-        font-size: 1.5rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: #f9fafb;
-      }
-      .form-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-      }
-      .form-row {
-        display: flex;
-        align-items: flex-end;
-        gap: 0.75rem;
-        font-size: 0.8rem;
-      }
-      .field {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-      }
-      .field label {
-        font-weight: 600;
-        color: #e5e7eb;
-        margin-bottom: 2px;
-      }
-      .field input,
-      .field select {
-        padding: 4px 8px;
-        border-radius: 6px;
-        border: 1px solid #1f2937;
-        font-size: 0.8rem;
-        background: #020617;
-        color: #e5e7eb;
-      }
-      .field input:focus,
-      .field select:focus {
-        outline: none;
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
-      }
-      .field input[type="date"] {
-        color: #38bdf8;
-        border-color: #0ea5e9;
-        background: rgba(14, 165, 233, 0.08);
-      }
-      .field input[type="date"]:focus {
-        border-color: #38bdf8;
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
-      }
-      .field input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(0.8);
-      }
-      .button-row {
-        margin-top: 0.85rem;
-        text-align: center;
-      }
-      .button-row button {
-        background: linear-gradient(90deg, #22c55e, #16a34a);
-        color: #020617;
-        border: none;
-        border-radius: 6px;
-        padding: 6px 18px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-      }
-      .button-row button[disabled] {
-        opacity: 0.7;
-        cursor: default;
-      }
-      .button-row .btn-wrap {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .spinner {
-        width: 18px;
-        height: 18px;
-        border: 2px solid rgba(2, 6, 23, 0.3);
-        border-top-color: #020617;
-        border-radius: 50%;
-        animation: spin 0.7s linear infinite;
-      }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      .status-message {
-        margin-top: 0.75rem;
-        font-size: 0.8rem;
-        text-align: center;
-        color: #bbf7d0;
-      }
-      .course-code-readonly {
-        background: #f9fafb;
-        color: #6b7280;
-      }
-      .output-toggle {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .output-toggle label {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-weight: 500;
-        color: #374151;
-      }
-      .file-hint {
-        font-size: 0.7rem;
-        color: #6b7280;
-        margin-top: 2px;
-      }
-      .course-suggestions {
-        margin-top: 4px;
-        border-radius: 6px;
-        border: 1px solid #1f2937;
-        background: #020617;
-        max-height: 140px;
-        overflow-y: auto;
-        box-shadow: 0 8px 18px rgba(15, 23, 42, 0.8);
-        font-size: 0.75rem;
-        z-index: 10;
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 100%;
-      }
-      .course-suggestion-item {
-        padding: 4px 8px;
-        cursor: pointer;
-        color: #e5e7eb;
-      }
-      .course-suggestion-item:hover {
-        background: #1f2937;
-      }
-      .course-field {
-        position: relative;
-      }
-      @media (max-width: 768px) {
-        .card-content {
-          flex-direction: column;
+    }
+  </style>
+  <!-- React via CDN for a simple React front-end -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Course data (same as original Assignment BaBa)
+    const courses = [
+      { code: "CSE 110", title: "Introduction to Computer System Laboratory" },
+      { code: "CSE 111", title: "Structured Programming" },
+      { code: "CSE 112", title: "Structured Programming Laboratory" },
+      { code: "EEE 101", title: "Electrical Circuits I" },
+      { code: "EEE 102", title: "Electrical Circuits I Laboratory" },
+      { code: "ENG 101", title: "General English" },
+      { code: "MAT 105", title: "Engineering Mathematics I" },
+      { code: "ME 102", title: "Mechanical Engineering Drawing & CAD Laboratory" },
+      { code: "CSE 103", title: "Discrete Mathematics" },
+      { code: "CSE 221", title: "Data Structure" },
+      { code: "CSE 222", title: "Data Structure Laboratory" },
+      { code: "ECO 201", title: "Basic Economics" },
+      { code: "EEE 211", title: "Electronics I" },
+      { code: "EEE 212", title: "Electronics I Laboratory" },
+      { code: "PHY 101", title: "Engineering Physics I" },
+      { code: "CSE 211", title: "Object Oriented Programming" },
+      { code: "CSE 212", title: "Object Oriented Programming Laboratory" },
+      { code: "CSE 302", title: "Computational Methods for Engineering Problems Laboratory" },
+      { code: "EEE 311", title: "Digital Electronics" },
+      { code: "EEE 312", title: "Digital Electronics Laboratory" },
+      { code: "ENG 103", title: "Developing English Skills" },
+      { code: "MAT 201", title: "Engineering Mathematics III" },
+      { code: "CSE 225", title: "Algorithm Design And Analysis" },
+      { code: "CSE 226", title: "Algorithm Design And Analysis Laboratory" },
+      { code: "CSE 237", title: "Database Management System" },
+      { code: "CSE 238", title: "Database Management System Laboratory" },
+      { code: "EEE 371", title: "Microprocessors & Microcontrollers" },
+      { code: "EEE 372", title: "Microprocessors & Microcontrollers Laboratory" },
+      { code: "MAT 203", title: "Engineering Mathematics IV" },
+      { code: "CSE 317", title: "Artificial Intelligence" },
+      { code: "CSE 318", title: "Artificial Intelligence Laboratory" },
+      { code: "CSE 333", title: "Operating Systems" },
+      { code: "CSE 334", title: "Operating Systems Laboratory" },
+      { code: "CSE 337", title: "Computer Organization & Architecture" },
+      { code: "CSE 305", title: "Software Engineering & Information System Design" },
+      { code: "CSE 306", title: "Software Engineering & Information System Design Laboratory" },
+      { code: "CSE 338", title: "Software Development" },
+      { code: "CSE 364", title: "Data Communication" },
+      { code: "CSE 367", title: "Computer Network" },
+      { code: "CSE 368", title: "Computer Network Laboratory" },
+      { code: "CSE 437", title: "Network and Computer Security" },
+      { code: "CSE 309", title: "Theory of Computation" },
+      { code: "CSE 451", title: "Neural Network & Fuzzy Logic" },
+      { code: "CSE 452", title: "Neural Network & Fuzzy Logic Laboratory" },
+      { code: "CSE 455", title: "Computer Graphics & Image Processing" },
+      { code: "CSE 456", title: "Computer Graphics & Image Processing Laboratory" },
+      { code: "EEE 313", title: "Control Systems" },
+      { code: "EEE 314", title: "Control Systems Laboratory" },
+      { code: "ENG 401", title: "Technical Writing & Presentation" },
+      { code: "CSE 453", title: "Compiler Construction" },
+      { code: "CSE 454", title: "Compiler Construction Laboratory" },
+      { code: "CSE 457", title: "Machine Learning" },
+      { code: "CSE 458", title: "Machine Learning Laboratory" },
+      { code: "CSE 459", title: "Pattern Recognition" },
+      { code: "CSE 460", title: "Pattern Recognition Laboratory" },
+      { code: "CSE 481", title: "Contemporary Course of Computer Science" },
+      { code: "CSE 482", title: "Contemporary Course of Computer Science Laboratory" },
+    ];
+
+    const App = () => {
+      const [loading, setLoading] = React.useState(false);
+      const [courseTitle, setCourseTitle] = React.useState("");
+      const [courseCode, setCourseCode] = React.useState("");
+      const today = new Date().toISOString().slice(0, 10);
+      const [submissionDate, setSubmissionDate] = React.useState(today);
+      const [performanceDate, setPerformanceDate] = React.useState("");
+      const [studentName, setStudentName] = React.useState("");
+      const [studentId, setStudentId] = React.useState("");
+      const [template, setTemplate] = React.useState("template1");
+      const [outputType, setOutputType] = React.useState("cover");
+      const [assignmentFile, setAssignmentFile] = React.useState(null);
+      const [formDefaults, setFormDefaults] = React.useState(null);
+      const [showCourseSuggestions, setShowCourseSuggestions] = React.useState(
+        false
+      );
+      const [coverType, setCoverType] = React.useState("assignment");
+      const [batch, setBatch] = React.useState("");
+      const [sectionValue, setSectionValue] = React.useState("");
+      const [session, setSession] = React.useState("");
+      const [statusMessage, setStatusMessage] = React.useState("");
+
+      // Load last filled values from localStorage on first render
+      React.useEffect(() => {
+        try {
+          const raw = localStorage.getItem("assignmentBaba:lastForm");
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          setFormDefaults(saved);
+
+          if (saved.course_title) {
+            setCourseTitle(saved.course_title);
+            const found = courses.find((c) => c.title === saved.course_title);
+            setCourseCode(found ? found.code : "");
+          }
+          if (saved.submission_date) setSubmissionDate(saved.submission_date);
+          if (saved.performance_date) setPerformanceDate(saved.performance_date);
+          if (saved.student_name) setStudentName(saved.student_name);
+          if (saved.student_id) setStudentId(saved.student_id);
+          if (saved.template) setTemplate(saved.template);
+          if (saved.output_type) setOutputType(saved.output_type);
+          if (saved.cover_type) setCoverType(saved.cover_type);
+          if (saved.batch) setBatch(saved.batch);
+          if (saved.section) setSectionValue(saved.section);
+          if (saved.session) setSession(saved.session);
+        } catch (e) {
+          console.error("Failed to load saved form from localStorage", e);
         }
-        .right-panel {
-          border-left: none;
-          border-top: 1px solid #e5e7eb;
-          padding-left: 0;
-          padding-top: 0.75rem;
+      }, []);
+
+      const handleSubmit = async (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Clear any previous status
+        setStatusMessage("");
+
+        // Enforce required non-optional fields that live in the side panel
+        if (!studentName.trim()) {
+          alert("Please enter student name.");
+          return;
         }
-      }
-    </style>
-    <!-- React via CDN for a simple React front-end -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
+        if (!studentId.trim()) {
+          alert("Please enter student ID.");
+          return;
+        }
+        if (!batch.trim()) {
+          alert("Please enter batch.");
+          return;
+        }
+        if (!sectionValue.trim()) {
+          alert("Please enter section.");
+          return;
+        }
+        if (!session.trim()) {
+          alert("Please enter session/semester.");
+          return;
+        }
 
-    <script type="text/babel">
-      // Course data (same as original Assignment BaBa)
-      const courses = [
-        { code: "CSE 110", title: "Introduction to Computer System Laboratory" },
-        { code: "CSE 111", title: "Structured Programming" },
-        { code: "CSE 112", title: "Structured Programming Laboratory" },
-        { code: "EEE 101", title: "Electrical Circuits I" },
-        { code: "EEE 102", title: "Electrical Circuits I Laboratory" },
-        { code: "ENG 101", title: "General English" },
-        { code: "MAT 105", title: "Engineering Mathematics I" },
-        { code: "ME 102", title: "Mechanical Engineering Drawing & CAD Laboratory" },
-        { code: "CSE 103", title: "Discrete Mathematics" },
-        { code: "CSE 221", title: "Data Structure" },
-        { code: "CSE 222", title: "Data Structure Laboratory" },
-        { code: "ECO 201", title: "Basic Economics" },
-        { code: "EEE 211", title: "Electronics I" },
-        { code: "EEE 212", title: "Electronics I Laboratory" },
-        { code: "PHY 101", title: "Engineering Physics I" },
-        { code: "CSE 211", title: "Object Oriented Programming" },
-        { code: "CSE 212", title: "Object Oriented Programming Laboratory" },
-        { code: "CSE 302", title: "Computational Methods for Engineering Problems Laboratory" },
-        { code: "EEE 311", title: "Digital Electronics" },
-        { code: "EEE 312", title: "Digital Electronics Laboratory" },
-        { code: "ENG 103", title: "Developing English Skills" },
-        { code: "MAT 201", title: "Engineering Mathematics III" },
-        { code: "CSE 225", title: "Algorithm Design And Analysis" },
-        { code: "CSE 226", title: "Algorithm Design And Analysis Laboratory" },
-        { code: "CSE 237", title: "Database Management System" },
-        { code: "CSE 238", title: "Database Management System Laboratory" },
-        { code: "EEE 371", title: "Microprocessors & Microcontrollers" },
-        { code: "EEE 372", title: "Microprocessors & Microcontrollers Laboratory" },
-        { code: "MAT 203", title: "Engineering Mathematics IV" },
-        { code: "CSE 317", title: "Artificial Intelligence" },
-        { code: "CSE 318", title: "Artificial Intelligence Laboratory" },
-        { code: "CSE 333", title: "Operating Systems" },
-        { code: "CSE 334", title: "Operating Systems Laboratory" },
-        { code: "CSE 337", title: "Computer Organization & Architecture" },
-        { code: "CSE 305", title: "Software Engineering & Information System Design" },
-        { code: "CSE 306", title: "Software Engineering & Information System Design Laboratory" },
-        { code: "CSE 338", title: "Software Development" },
-        { code: "CSE 364", title: "Data Communication" },
-        { code: "CSE 367", title: "Computer Network" },
-        { code: "CSE 368", title: "Computer Network Laboratory" },
-        { code: "CSE 437", title: "Network and Computer Security" },
-        { code: "CSE 309", title: "Theory of Computation" },
-        { code: "CSE 451", title: "Neural Network & Fuzzy Logic" },
-        { code: "CSE 452", title: "Neural Network & Fuzzy Logic Laboratory" },
-        { code: "CSE 455", title: "Computer Graphics & Image Processing" },
-        { code: "CSE 456", title: "Computer Graphics & Image Processing Laboratory" },
-        { code: "EEE 313", title: "Control Systems" },
-        { code: "EEE 314", title: "Control Systems Laboratory" },
-        { code: "ENG 401", title: "Technical Writing & Presentation" },
-        { code: "CSE 453", title: "Compiler Construction" },
-        { code: "CSE 454", title: "Compiler Construction Laboratory" },
-        { code: "CSE 457", title: "Machine Learning" },
-        { code: "CSE 458", title: "Machine Learning Laboratory" },
-        { code: "CSE 459", title: "Pattern Recognition" },
-        { code: "CSE 460", title: "Pattern Recognition Laboratory" },
-        { code: "CSE 481", title: "Contemporary Course of Computer Science" },
-        { code: "CSE 482", title: "Contemporary Course of Computer Science Laboratory" },
-      ];
+        // Add output type explicitly
+        formData.set("output_type", outputType);
 
-      const App = () => {
-        const [loading, setLoading] = React.useState(false);
-        const [courseTitle, setCourseTitle] = React.useState("");
-        const [courseCode, setCourseCode] = React.useState("");
-        const today = new Date().toISOString().slice(0, 10);
-        const [submissionDate, setSubmissionDate] = React.useState(today);
-        const [performanceDate, setPerformanceDate] = React.useState("");
-        const [studentName, setStudentName] = React.useState("");
-        const [studentId, setStudentId] = React.useState("");
-        const [template, setTemplate] = React.useState("template1");
-        const [outputType, setOutputType] = React.useState("cover");
-        const [assignmentFile, setAssignmentFile] = React.useState(null);
-        const [formDefaults, setFormDefaults] = React.useState(null);
-        const [showCourseSuggestions, setShowCourseSuggestions] = React.useState(
-          false
-        );
-        const [coverType, setCoverType] = React.useState("assignment");
-        const [batch, setBatch] = React.useState("");
-        const [sectionValue, setSectionValue] = React.useState("");
-        const [session, setSession] = React.useState("");
-        const [statusMessage, setStatusMessage] = React.useState("");
+        if (outputType === "merged") {
+          if (!assignmentFile) {
+            alert("Please select an assignment file to merge (PDF/DOC/DOCX).");
+            return;
+          }
+          if (!formData.get("assignment_file")) {
+            // Ensure file is in formData
+            formData.append("assignment_file", assignmentFile);
+          }
+        }
 
-        // Load last filled values from localStorage on first render
-        React.useEffect(() => {
-          try {
-            const raw = localStorage.getItem("assignmentBaba:lastForm");
-            if (!raw) return;
-            const saved = JSON.parse(raw);
-            setFormDefaults(saved);
+        // Save current values (except file) to localStorage
+        try {
+          const plain = {};
+          for (const [key, value] of formData.entries()) {
+            if (key === "assignment_file") continue;
+            plain[key] = value;
+          }
+          plain.output_type = outputType;
+          plain.template = template;
+          plain.cover_type = coverType;
+          plain.batch = batch;
+          plain.section = sectionValue;
+          plain.session = session;
+          plain.performance_date = performanceDate;
+          localStorage.setItem(
+            "assignmentBaba:lastForm",
+            JSON.stringify(plain)
+          );
+        } catch (e) {
+          console.error("Failed to save form to localStorage", e);
+        }
 
-            if (saved.course_title) {
-              setCourseTitle(saved.course_title);
-              const found = courses.find((c) => c.title === saved.course_title);
-              setCourseCode(found ? found.code : "");
+        try {
+          setLoading(true);
+          const response = await fetch("/generate", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            let message = "Failed to generate file.";
+            try {
+              const text = await response.text();
+              if (text) message = text;
+            } catch (e) {
+              // ignore
             }
-            if (saved.submission_date) setSubmissionDate(saved.submission_date);
-            if (saved.performance_date) setPerformanceDate(saved.performance_date);
-            if (saved.student_name) setStudentName(saved.student_name);
-            if (saved.student_id) setStudentId(saved.student_id);
-            if (saved.template) setTemplate(saved.template);
-            if (saved.output_type) setOutputType(saved.output_type);
-            if (saved.cover_type) setCoverType(saved.cover_type);
-            if (saved.batch) setBatch(saved.batch);
-            if (saved.section) setSectionValue(saved.section);
-            if (saved.session) setSession(saved.session);
-          } catch (e) {
-            console.error("Failed to load saved form from localStorage", e);
-          }
-        }, []);
-
-        const handleSubmit = async (event) => {
-          event.preventDefault();
-          const form = event.target;
-          const formData = new FormData(form);
-
-          // Clear any previous status
-          setStatusMessage("");
-
-          // Enforce required non-optional fields that live in the side panel
-          if (!studentName.trim()) {
-            alert("Please enter student name.");
-            return;
-          }
-          if (!studentId.trim()) {
-            alert("Please enter student ID.");
-            return;
-          }
-          if (!batch.trim()) {
-            alert("Please enter batch.");
-            return;
-          }
-          if (!sectionValue.trim()) {
-            alert("Please enter section.");
-            return;
-          }
-          if (!session.trim()) {
-            alert("Please enter session/semester.");
+            alert(message);
             return;
           }
 
-          // Add output type explicitly
-          formData.set("output_type", outputType);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          const contentDisposition = response.headers.get("Content-Disposition") || "";
+          const match = contentDisposition.match(/filename="?([^"]+)"?/i);
+          link.download = match ? match[1] : "assignment_cover_page";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+          // Success feedback
+          const what =
+            outputType === "merged"
+              ? "cover page and assignment"
+              : "cover page";
+          setStatusMessage(`Successfully generated ${what}. Your download has started.`);
+        } catch (e) {
+          console.error(e);
+          alert("Error while generating file.");
+        } finally {
+          setLoading(false);
+        }
+      };
 
-          if (outputType === "merged") {
-            if (!assignmentFile) {
-              alert("Please select an assignment file to merge (PDF/DOC/DOCX).");
-              return;
-            }
-            if (!formData.get("assignment_file")) {
-              // Ensure file is in formData
-              formData.append("assignment_file", assignmentFile);
-            }
-          }
-
-          // Save current values (except file) to localStorage
-          try {
-            const plain = {};
-            for (const [key, value] of formData.entries()) {
-              if (key === "assignment_file") continue;
-              plain[key] = value;
-            }
-            plain.output_type = outputType;
-            plain.template = template;
-            plain.cover_type = coverType;
-            plain.batch = batch;
-            plain.section = sectionValue;
-            plain.session = session;
-            plain.performance_date = performanceDate;
-            localStorage.setItem(
-              "assignmentBaba:lastForm",
-              JSON.stringify(plain)
-            );
-          } catch (e) {
-            console.error("Failed to save form to localStorage", e);
-          }
-
-          try {
-            setLoading(true);
-            const response = await fetch("/generate", {
-              method: "POST",
-              body: formData,
-            });
-
-            if (!response.ok) {
-              let message = "Failed to generate file.";
-              try {
-                const text = await response.text();
-                if (text) message = text;
-              } catch (e) {
-                // ignore
-              }
-              alert(message);
-              return;
-            }
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            const contentDisposition = response.headers.get("Content-Disposition") || "";
-            const match = contentDisposition.match(/filename="?([^"]+)"?/i);
-            link.download = match ? match[1] : "assignment_cover_page";
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-            // Success feedback
-            const what =
-              outputType === "merged"
-                ? "cover page and assignment"
-                : "cover page";
-            setStatusMessage(`Successfully generated ${what}. Your download has started.`);
-          } catch (e) {
-            console.error(e);
-            alert("Error while generating file.");
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        return (
-          <div className="app-root">
-            <div className="card">
-              <h2>Assignment BaBa</h2>
-              <div className="card-content">
-                <form onSubmit={handleSubmit} className="left-column">
-                  <div className="form-grid">
-                    <div className="form-row">
-                      <div className="field">
-                        <label>Cover page type:</label>
-                        <div className="output-toggle">
-                          <label>
-                            <input
-                              type="radio"
-                              name="cover_type_choice"
-                              value="assignment"
-                              checked={coverType === "assignment"}
-                              onChange={() => setCoverType("assignment")}
-                            />
-                            Assignment
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              name="cover_type_choice"
-                              value="lab"
-                              checked={coverType === "lab"}
-                              onChange={() => setCoverType("lab")}
-                            />
-                            Lab report
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="field">
+      return (
+        <div className="app-root">
+          <div className="card">
+            <h2>Assignment BaBa</h2>
+            <div className="card-content">
+              <form onSubmit={handleSubmit} className="left-column">
+                <div className="form-grid">
+                  <div className="form-row">
+                    <div className="field">
+                      <label>Cover page type:</label>
+                      <div className="output-toggle">
                         <label>
-                          {coverType === "lab" ? "Lab Report No:" : "Assignment No:"}
-                        </label>
-                        <input
-                          name="assignment_no"
-                          required
-                          defaultValue={formDefaults?.assignment_no || ""}
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Date of Performance:</label>
-                        <input
-                          type="date"
-                          name="performance_date"
-                          value={performanceDate}
-                          onChange={(e) => setPerformanceDate(e.target.value)}
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Date of Submission:</label>
-                        <input
-                          type="date"
-                          name="submission_date"
-                          required
-                          value={submissionDate}
-                          onChange={(e) => setSubmissionDate(e.target.value)}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="field course-field">
-                        <label>Course Title:</label>
-                        <input
-                          name="course_title"
-                          required
-                          autoComplete="off"
-                          value={courseTitle}
-                          onChange={(e) => {
-                            const title = e.target.value;
-                            setCourseTitle(title);
-                            setShowCourseSuggestions(true);
-                            const found = courses.find(
-                              (c) => c.title.toLowerCase() === title.toLowerCase()
-                            );
-                            setCourseCode(found ? found.code : "");
-                          }}
-                          onFocus={() => setShowCourseSuggestions(true)}
-                          onBlur={() => {
-                            // Hide suggestions shortly after blur to allow click
-                            setTimeout(() => setShowCourseSuggestions(false), 150);
-                          }}
-                          placeholder="Search course by title"
-                        />
-                        {showCourseSuggestions && courseTitle && (
-                          <div className="course-suggestions">
-                            {courses
-                              .filter((c) =>
-                                c.title
-                                  .toLowerCase()
-                                  .includes(courseTitle.toLowerCase())
-                              )
-                              .slice(0, 15)
-                              .map((course) => (
-                                <div
-                                  key={course.code}
-                                  className="course-suggestion-item"
-                                  onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    setCourseTitle(course.title);
-                                    setCourseCode(course.code);
-                                    setShowCourseSuggestions(false);
-                                  }}
-                                >
-                                  {course.title} — {course.code}
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-                      <div className="field">
-                        <label>Course Code:</label>
-                        <input
-                          name="course_code"
-                          required
-                          value={courseCode}
-                          readOnly
-                          className="course-code-readonly"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="field">
-                        <label>
-                          {coverType === "lab"
-                            ? "Lab Report Name:"
-                            : "Assignment Name:"}
-                        </label>
-                        <input
-                          name="assignment_name"
-                          required
-                          defaultValue={formDefaults?.assignment_name || ""}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="field">
-                        <label>Submitted to (optional):</label>
-                        <input
-                          name="submitted_to"
-                          defaultValue={formDefaults?.submitted_to || ""}
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Designation (optional):</label>
-                        <input
-                          name="submitted_designation"
-                          defaultValue={formDefaults?.submitted_designation || ""}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-row">
-                      <div className="field">
-                        <label>Output type:</label>
-                        <div className="output-toggle">
-                          <label>
-                            <input
-                              type="radio"
-                              name="output_type_choice"
-                              value="cover"
-                              checked={outputType === "cover"}
-                              onChange={() => setOutputType("cover")}
-                            />
-                            Only cover page
-                          </label>
-                          <label>
-                            <input
-                              type="radio"
-                              name="output_type_choice"
-                              value="merged"
-                              checked={outputType === "merged"}
-                              onChange={() => setOutputType("merged")}
-                            />
-                            Complete assignment
-                          </label>
-                        </div>
-                      </div>
-                      <div className="field">
-                        <label>Output format:</label>
-                        <select
-                          name="output_format"
-                          defaultValue={formDefaults?.output_format || "pdf"}
-                        >
-                          <option value="pdf">PDF</option>
-                          <option value="docx">DOCX (Word)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {outputType === "merged" && (
-                      <div className="form-row">
-                        <div className="field">
-                          <label>Assignment file:</label>
-                          <input
-                            type="file"
-                            name="assignment_file"
-                            accept=".pdf,.doc,.docx"
-                            onChange={(e) => {
-                              const file = e.target.files && e.target.files[0];
-                              setAssignmentFile(file || null);
-                            }}
-                          />
-                          <div className="file-hint">
-                            Accepted: PDF, DOC, DOCX. This will be merged after the cover page.
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Hidden fields driven by right-side panel */}
-                    <input type="hidden" name="template" value={template} />
-                    <input type="hidden" name="student_name" value={studentName} />
-                    <input type="hidden" name="student_id" value={studentId} />
-                    <input type="hidden" name="cover_type" value={coverType} />
-                    <input type="hidden" name="batch" value={batch} />
-                    <input type="hidden" name="section" value={sectionValue} />
-                    <input type="hidden" name="session" value={session} />
-                  </div>
-
-                  <div className="button-row">
-                    <button type="submit" disabled={loading}>
-                      <span className="btn-wrap">
-                        {loading && <span className="spinner" />}
-                        {loading ? " Generating..." : "Generate"}
-                      </span>
-                    </button>
-                  </div>
-                  {statusMessage && (
-                    <div className="status-message">{statusMessage}</div>
-                  )}
-                </form>
-
-                <div className="right-panel">
-                  <div className="panel-section">
-                    <div className="panel-section-title">Student information</div>
-                    <div className="panel-box">
-                      <div className="field">
-                        <label>Name:</label>
-                        <input
-                          type="text"
-                          value={studentName}
-                          onChange={(e) => setStudentName(e.target.value)}
-                          placeholder="Enter student name"
-                        />
-                      </div>
-                      <div className="field">
-                        <label>ID:</label>
-                        <input
-                          type="text"
-                          value={studentId}
-                          onChange={(e) => setStudentId(e.target.value)}
-                          placeholder="Enter student ID"
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Batch:</label>
-                        <input
-                          type="text"
-                          value={batch}
-                          onChange={(e) => setBatch(e.target.value)}
-                          placeholder="e.g. 41"
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Section:</label>
-                        <input
-                          type="text"
-                          value={sectionValue}
-                          onChange={(e) => setSectionValue(e.target.value)}
-                          placeholder="e.g. C"
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Session:</label>
-                        <input
-                          type="text"
-                          value={session}
-                          onChange={(e) => setSession(e.target.value)}
-                          placeholder="e.g. Spring 2025"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="panel-section">
-                    <div className="panel-section-title">Template selection</div>
-                    <div className="template-options">
-                      {["template1", "template2", "template3", "template4"].map((t, idx) => (
-                        <label
-                          key={t}
-                          className={
-                            "template-card" + (template === t ? " selected" : "")
-                          }
-                        >
                           <input
                             type="radio"
-                            name="template_choice"
-                            value={t}
-                            checked={template === t}
-                            onChange={() => setTemplate(t)}
+                            name="cover_type_choice"
+                            value="assignment"
+                            checked={coverType === "assignment"}
+                            onChange={() => setCoverType("assignment")}
                           />
-                          <span>
-                            Template {idx + 1}
-                            {t === "template1" ? " (Default)" : ""}
-                          </span>
+                          Assignment
                         </label>
-                      ))}
+                        <label>
+                          <input
+                            type="radio"
+                            name="cover_type_choice"
+                            value="lab"
+                            checked={coverType === "lab"}
+                            onChange={() => setCoverType("lab")}
+                          />
+                          Lab report
+                        </label>
+                      </div>
                     </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="field">
+                      <label>
+                        {coverType === "lab" ? "Lab Report No:" : "Assignment No:"}
+                      </label>
+                      <input
+                        name="assignment_no"
+                        required
+                        defaultValue={formDefaults?.assignment_no || ""}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Date of Performance:</label>
+                      <input
+                        type="date"
+                        name="performance_date"
+                        value={performanceDate}
+                        onChange={(e) => setPerformanceDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Date of Submission:</label>
+                      <input
+                        type="date"
+                        name="submission_date"
+                        required
+                        value={submissionDate}
+                        onChange={(e) => setSubmissionDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="field course-field">
+                      <label>Course Title:</label>
+                      <input
+                        name="course_title"
+                        required
+                        autoComplete="off"
+                        value={courseTitle}
+                        onChange={(e) => {
+                          const title = e.target.value;
+                          setCourseTitle(title);
+                          setShowCourseSuggestions(true);
+                          const found = courses.find(
+                            (c) => c.title.toLowerCase() === title.toLowerCase()
+                          );
+                          setCourseCode(found ? found.code : "");
+                        }}
+                        onFocus={() => setShowCourseSuggestions(true)}
+                        onBlur={() => {
+                          // Hide suggestions shortly after blur to allow click
+                          setTimeout(() => setShowCourseSuggestions(false), 150);
+                        }}
+                        placeholder="Search course by title"
+                      />
+                      {showCourseSuggestions && courseTitle && (
+                        <div className="course-suggestions">
+                          {courses
+                            .filter((c) =>
+                              c.title
+                                .toLowerCase()
+                                .includes(courseTitle.toLowerCase())
+                            )
+                            .slice(0, 15)
+                            .map((course) => (
+                              <div
+                                key={course.code}
+                                className="course-suggestion-item"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  setCourseTitle(course.title);
+                                  setCourseCode(course.code);
+                                  setShowCourseSuggestions(false);
+                                }}
+                              >
+                                {course.title} — {course.code}
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="field">
+                      <label>Course Code:</label>
+                      <input
+                        name="course_code"
+                        required
+                        value={courseCode}
+                        readOnly
+                        className="course-code-readonly"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="field">
+                      <label>
+                        {coverType === "lab"
+                          ? "Lab Report Name:"
+                          : "Assignment Name:"}
+                      </label>
+                      <input
+                        name="assignment_name"
+                        required
+                        defaultValue={formDefaults?.assignment_name || ""}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="field">
+                      <label>Submitted to (optional):</label>
+                      <input
+                        name="submitted_to"
+                        defaultValue={formDefaults?.submitted_to || ""}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Designation (optional):</label>
+                      <input
+                        name="submitted_designation"
+                        defaultValue={formDefaults?.submitted_designation || ""}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="field">
+                      <label>Output type:</label>
+                      <div className="output-toggle">
+                        <label>
+                          <input
+                            type="radio"
+                            name="output_type_choice"
+                            value="cover"
+                            checked={outputType === "cover"}
+                            onChange={() => setOutputType("cover")}
+                          />
+                          Only cover page
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="output_type_choice"
+                            value="merged"
+                            checked={outputType === "merged"}
+                            onChange={() => setOutputType("merged")}
+                          />
+                          Complete assignment
+                        </label>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {outputType === "merged" && (
+                    <div className="form-row">
+                      <div className="field">
+                        <label>Assignment file:</label>
+                        <input
+                          type="file"
+                          name="assignment_file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => {
+                            const file = e.target.files && e.target.files[0];
+                            setAssignmentFile(file || null);
+                          }}
+                        />
+                        <div className="file-hint">
+                          Accepted: PDF, DOC, DOCX. This will be merged after the cover page.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hidden fields driven by right-side panel */}
+                  <input type="hidden" name="template" value={template} />
+                  <input type="hidden" name="student_name" value={studentName} />
+                  <input type="hidden" name="student_id" value={studentId} />
+                  <input type="hidden" name="cover_type" value={coverType} />
+                  <input type="hidden" name="batch" value={batch} />
+                  <input type="hidden" name="section" value={sectionValue} />
+                  <input type="hidden" name="session" value={session} />
+                </div>
+
+                <div className="button-row">
+                  <button type="submit" disabled={loading}>
+                    <span className="btn-wrap">
+                      {loading && <span className="spinner" />}
+                      {loading ? " Generating..." : "Generate"}
+                    </span>
+                  </button>
+                </div>
+                {statusMessage && (
+                  <div className="status-message">{statusMessage}</div>
+                )}
+              </form>
+
+              <div className="right-panel">
+                <div className="panel-section">
+                  <div className="panel-section-title">Student information</div>
+                  <div className="panel-box">
+                    <div className="field">
+                      <label>Name:</label>
+                      <input
+                        type="text"
+                        value={studentName}
+                        onChange={(e) => setStudentName(e.target.value)}
+                        placeholder="Enter student name"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>ID:</label>
+                      <input
+                        type="text"
+                        value={studentId}
+                        onChange={(e) => setStudentId(e.target.value)}
+                        placeholder="Enter student ID"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Batch:</label>
+                      <input
+                        type="text"
+                        value={batch}
+                        onChange={(e) => setBatch(e.target.value)}
+                        placeholder="e.g. 41"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Section:</label>
+                      <input
+                        type="text"
+                        value={sectionValue}
+                        onChange={(e) => setSectionValue(e.target.value)}
+                        placeholder="e.g. C"
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Session:</label>
+                      <input
+                        type="text"
+                        value={session}
+                        onChange={(e) => setSession(e.target.value)}
+                        placeholder="e.g. Spring 2025"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="panel-section">
+                  <div className="panel-section-title">Template selection</div>
+                  <div className="template-options">
+                    {["template1", "template2", "template3", "template4"].map((t, idx) => (
+                      <label
+                        key={t}
+                        className={
+                          "template-card" + (template === t ? " selected" : "")
+                        }
+                      >
+                        <input
+                          type="radio"
+                          name="template_choice"
+                          value={t}
+                          checked={template === t}
+                          onChange={() => setTemplate(t)}
+                        />
+                        <span>
+                          Template {idx + 1}
+                          {t === "template1" ? " (Default)" : ""}
+                        </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        );
-      };
+        </div>
+      );
+    };
 
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
-    </script>
-  </body>
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+
 </html>
