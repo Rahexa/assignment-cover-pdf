@@ -209,11 +209,6 @@
       color: #bbf7d0;
     }
 
-    .course-code-readonly {
-      background: #f9fafb;
-      color: #6b7280;
-    }
-
     .output-toggle {
       display: flex;
       gap: 0.5rem;
@@ -351,6 +346,14 @@
       const [loading, setLoading] = React.useState(false);
       const [courseTitle, setCourseTitle] = React.useState("");
       const [courseCode, setCourseCode] = React.useState("");
+      const [customCourses, setCustomCourses] = React.useState(() => {
+        try {
+          const saved = localStorage.getItem("assignmentBaba:customCourses");
+          return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+          return [];
+        }
+      });
       const today = new Date().toISOString().slice(0, 10);
       const [submissionDate, setSubmissionDate] = React.useState(today);
       const [performanceDate, setPerformanceDate] = React.useState("");
@@ -369,6 +372,10 @@
       const [session, setSession] = React.useState("");
       const [statusMessage, setStatusMessage] = React.useState("");
 
+      const allCourses = React.useMemo(() => {
+        return [...courses, ...customCourses];
+      }, [customCourses]);
+
       // Load last filled values from localStorage on first render
       React.useEffect(() => {
         try {
@@ -379,8 +386,12 @@
 
           if (saved.course_title) {
             setCourseTitle(saved.course_title);
-            const found = courses.find((c) => c.title === saved.course_title);
-            setCourseCode(found ? found.code : "");
+          }
+          if (saved.course_code) {
+            setCourseCode(saved.course_code);
+          } else if (saved.course_title) {
+            const found = courses.find((c) => c.title.toLowerCase() === saved.course_title.toLowerCase());
+            if (found) setCourseCode(found.code);
           }
           if (saved.submission_date) setSubmissionDate(saved.submission_date);
           if (saved.performance_date) setPerformanceDate(saved.performance_date);
@@ -459,6 +470,25 @@
             "assignmentBaba:lastForm",
             JSON.stringify(plain)
           );
+
+          if (courseTitle.trim() && courseCode.trim()) {
+            const exists = allCourses.some(
+              (c) =>
+                c.title.trim().toLowerCase() === courseTitle.trim().toLowerCase() &&
+                c.code.trim().toLowerCase() === courseCode.trim().toLowerCase()
+            );
+            if (!exists) {
+              const updated = [
+                ...customCourses,
+                { code: courseCode.trim(), title: courseTitle.trim() },
+              ];
+              setCustomCourses(updated);
+              localStorage.setItem(
+                "assignmentBaba:customCourses",
+                JSON.stringify(updated)
+              );
+            }
+          }
         } catch (e) {
           console.error("Failed to save form to localStorage", e);
         }
@@ -586,30 +616,35 @@
                           const title = e.target.value;
                           setCourseTitle(title);
                           setShowCourseSuggestions(true);
-                          const found = courses.find(
+                          const found = allCourses.find(
                             (c) => c.title.toLowerCase() === title.toLowerCase()
                           );
-                          setCourseCode(found ? found.code : "");
+                          if (found) {
+                            setCourseCode(found.code);
+                          }
                         }}
                         onFocus={() => setShowCourseSuggestions(true)}
                         onBlur={() => {
                           // Hide suggestions shortly after blur to allow click
-                          setTimeout(() => setShowCourseSuggestions(false), 150);
+                          setTimeout(() => setShowCourseSuggestions(false), 200);
                         }}
-                        placeholder="Search course by title"
+                        placeholder="Search or manually type course title"
                       />
                       {showCourseSuggestions && courseTitle && (
                         <div className="course-suggestions">
-                          {courses
+                          {allCourses
                             .filter((c) =>
                               c.title
+                                .toLowerCase()
+                                .includes(courseTitle.toLowerCase()) ||
+                              c.code
                                 .toLowerCase()
                                 .includes(courseTitle.toLowerCase())
                             )
                             .slice(0, 15)
-                            .map((course) => (
+                            .map((course, idx) => (
                               <div
-                                key={course.code}
+                                key={`${course.code}-${course.title}-${idx}`}
                                 className="course-suggestion-item"
                                 onMouseDown={(e) => {
                                   e.preventDefault();
@@ -630,8 +665,8 @@
                         name="course_code"
                         required
                         value={courseCode}
-                        readOnly
-                        className="course-code-readonly"
+                        onChange={(e) => setCourseCode(e.target.value)}
+                        placeholder="e.g. CSE 111"
                       />
                     </div>
                   </div>
